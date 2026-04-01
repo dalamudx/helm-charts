@@ -1,0 +1,45 @@
+suite: test graphql migration job
+
+templates:
+  - graphql/migration.yaml
+
+release:
+  name: affine
+  namespace: affine
+
+chart:
+  version: 1.0.0
+  appVersion: 0.26.3
+
+tests:
+  - it: should render the migration job by default
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: should use pre-install and pre-upgrade hooks by default
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-install,pre-upgrade
+
+  - it: should keep the configured hook weight by default
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook-weight"]
+          value: "-1"
+
+  - it: should keep the configured hook delete policy by default
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook-delete-policy"]
+          value: before-hook-creation
+
+  - it: should not render the migration job when disabled
+    set:
+      graphql:
+        migration:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0

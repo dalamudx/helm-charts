@@ -1,0 +1,125 @@
+suite: test helm test pods
+
+templates:
+  - tests/test-connection-front.yaml
+  - tests/test-connection-graphql.yaml
+  - tests/test-connection-doc.yaml
+
+release:
+  name: affine
+  namespace: affine
+
+chart:
+  version: 1.0.0
+  appVersion: 0.26.3
+
+tests:
+  - it: should render the front helm test pod with the configured registry image
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: test
+        template: tests/test-connection-front.yaml
+      - equal:
+          path: spec.restartPolicy
+          value: Never
+        template: tests/test-connection-front.yaml
+      - equal:
+          path: spec.containers[0].image
+          value: ghcr.io/busybox
+        template: tests/test-connection-front.yaml
+      - equal:
+          path: spec.containers[0].args[0]
+          value: affine-sync:3010
+        template: tests/test-connection-front.yaml
+
+  - it: should render the graphql helm test pod with the configured registry image
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: test
+        template: tests/test-connection-graphql.yaml
+      - equal:
+          path: spec.restartPolicy
+          value: Never
+        template: tests/test-connection-graphql.yaml
+      - equal:
+          path: spec.containers[0].image
+          value: ghcr.io/busybox
+        template: tests/test-connection-graphql.yaml
+      - equal:
+          path: spec.containers[0].args[0]
+          value: affine-graphql:3010
+        template: tests/test-connection-graphql.yaml
+
+  - it: should render the doc helm test pod with the configured registry image
+    asserts:
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: test
+        template: tests/test-connection-doc.yaml
+      - equal:
+          path: spec.restartPolicy
+          value: Never
+        template: tests/test-connection-doc.yaml
+      - equal:
+          path: spec.containers[0].image
+          value: ghcr.io/busybox
+        template: tests/test-connection-doc.yaml
+      - equal:
+          path: spec.containers[0].args[0]
+          value: affine-doc:3010
+        template: tests/test-connection-doc.yaml
+
+  - it: should honor a custom registry in helm test pod images
+    set:
+      global:
+        registry: registry.example.com
+    asserts:
+      - equal:
+          path: spec.containers[0].image
+          value: registry.example.com/busybox
+        template: tests/test-connection-front.yaml
+      - equal:
+          path: spec.containers[0].image
+          value: registry.example.com/busybox
+        template: tests/test-connection-graphql.yaml
+      - equal:
+          path: spec.containers[0].image
+          value: registry.example.com/busybox
+        template: tests/test-connection-doc.yaml
+
+  - it: should honor custom front sync service name and port in the front test pod target
+    set:
+      front:
+        services:
+          sync:
+            name: custom-sync
+            port: 4001
+    asserts:
+      - equal:
+          path: spec.containers[0].args[0]
+          value: custom-sync:4001
+        template: tests/test-connection-front.yaml
+
+  - it: should honor a custom graphql service port in the graphql test pod target
+    set:
+      graphql:
+        service:
+          port: 4002
+    asserts:
+      - equal:
+          path: spec.containers[0].args[0]
+          value: affine-graphql:4002
+        template: tests/test-connection-graphql.yaml
+
+  - it: should honor a custom doc service port in the doc test pod target
+    set:
+      doc:
+        service:
+          port: 4003
+    asserts:
+      - equal:
+          path: spec.containers[0].args[0]
+          value: affine-doc:4003
+        template: tests/test-connection-doc.yaml

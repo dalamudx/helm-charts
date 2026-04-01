@@ -1,0 +1,138 @@
+suite: test services
+
+templates:
+  - front/service.yaml
+  - graphql/service.yaml
+  - doc/service.yaml
+
+release:
+  name: affine
+  namespace: affine
+
+chart:
+  version: 1.0.0
+  appVersion: 0.26.3
+
+tests:
+  - it: should render the front service by default
+    asserts:
+      - hasDocuments:
+          count: 1
+        template: front/service.yaml
+
+  - it: should set the front service type and primary port by default
+    asserts:
+      - equal:
+          path: spec.type
+          value: ClusterIP
+        template: front/service.yaml
+      - equal:
+          path: spec.ports[0].port
+          value: 3010
+        template: front/service.yaml
+      - equal:
+          path: spec.ports[0].targetPort
+          value: http
+        template: front/service.yaml
+      - equal:
+          path: spec.ports[0].name
+          value: http
+        template: front/service.yaml
+
+  - it: should apply a custom front service port and type
+    set:
+      front:
+        service:
+          type: LoadBalancer
+          port: 8080
+    asserts:
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+        template: front/service.yaml
+      - equal:
+          path: spec.ports[0].port
+          value: 8080
+        template: front/service.yaml
+
+  - it: should render the graphql service by default
+    asserts:
+      - hasDocuments:
+          count: 1
+        template: graphql/service.yaml
+
+  - it: should set the graphql service type and primary port by default
+    asserts:
+      - equal:
+          path: spec.type
+          value: ClusterIP
+        template: graphql/service.yaml
+      - equal:
+          path: spec.ports[0].port
+          value: 3010
+        template: graphql/service.yaml
+      - equal:
+          path: spec.ports[0].targetPort
+          value: http
+        template: graphql/service.yaml
+      - equal:
+          path: spec.ports[0].name
+          value: http
+        template: graphql/service.yaml
+
+  - it: should apply a custom graphql service port and type
+    set:
+      graphql:
+        service:
+          type: LoadBalancer
+          port: 8081
+    asserts:
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+        template: graphql/service.yaml
+      - equal:
+          path: spec.ports[0].port
+          value: 8081
+        template: graphql/service.yaml
+
+  - it: should render the doc service by default
+    asserts:
+      - hasDocuments:
+          count: 1
+        template: doc/service.yaml
+
+  - it: should set the doc service type and primary port by default
+    asserts:
+      - equal:
+          path: spec.type
+          value: ClusterIP
+        template: doc/service.yaml
+      - equal:
+          path: spec.ports[0].port
+          value: 3010
+        template: doc/service.yaml
+      - equal:
+          path: spec.ports[0].targetPort
+          value: http
+        template: doc/service.yaml
+      - equal:
+          path: spec.ports[0].name
+          value: http
+        template: doc/service.yaml
+
+  - it: should apply a custom doc service port and type
+    set:
+      doc:
+        service:
+          type: LoadBalancer
+          port: 8082
+    asserts:
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+        template: doc/service.yaml
+      - equal:
+          path: spec.ports[0].port
+          value: 8082
+        template: doc/service.yaml

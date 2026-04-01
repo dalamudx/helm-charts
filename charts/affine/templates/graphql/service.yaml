@@ -11,11 +11,5 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-    {{- if .Values.graphql.service.nodePort }}
-    - port: {{ .Values.graphql.service.nodePort }}
-      targetPort: http
-      protocol: TCP
-      name: node-port
-    {{- end }}
   selector:
     {{- include "graphql.selectorLabels" . | nindent 4 }}

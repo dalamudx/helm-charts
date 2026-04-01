@@ -1,0 +1,114 @@
+suite: test front internal services
+
+templates:
+  - front/service-sync.yaml
+  - front/service-renderer.yaml
+
+release:
+  name: affine
+  namespace: affine
+
+chart:
+  version: 1.0.0
+  appVersion: 0.26.3
+
+tests:
+  - it: should render the sync service with configured defaults
+    asserts:
+      - equal:
+          path: metadata.name
+          value: affine-sync
+        template: front/service-sync.yaml
+      - equal:
+          path: spec.type
+          value: ClusterIP
+        template: front/service-sync.yaml
+      - equal:
+          path: spec.ports[0].port
+          value: 3010
+        template: front/service-sync.yaml
+
+  - it: should render the renderer service with configured defaults
+    asserts:
+      - equal:
+          path: metadata.name
+          value: affine-renderer
+        template: front/service-renderer.yaml
+      - equal:
+          path: spec.type
+          value: ClusterIP
+        template: front/service-renderer.yaml
+      - equal:
+          path: spec.ports[0].port
+          value: 3010
+        template: front/service-renderer.yaml
+
+  - it: should apply sync service annotations when set
+    set:
+      front:
+        services:
+          sync:
+            annotations:
+              service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    asserts:
+      - equal:
+          path: metadata.annotations["service.beta.kubernetes.io/aws-load-balancer-type"]
+          value: nlb
+        template: front/service-sync.yaml
+
+  - it: should apply custom sync service name, type, and port
+    set:
+      front:
+        services:
+          sync:
+            name: custom-sync
+            type: LoadBalancer
+            port: 4001
+    asserts:
+      - equal:
+          path: metadata.name
+          value: custom-sync
+        template: front/service-sync.yaml
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+        template: front/service-sync.yaml
+      - equal:
+          path: spec.ports[0].port
+          value: 4001
+        template: front/service-sync.yaml
+
+  - it: should apply renderer service annotations when set
+    set:
+      front:
+        services:
+          renderer:
+            annotations:
+              service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    asserts:
+      - equal:
+          path: metadata.annotations["service.beta.kubernetes.io/aws-load-balancer-type"]
+          value: nlb
+        template: front/service-renderer.yaml
+
+  - it: should apply custom renderer service name, type, and port
+    set:
+      front:
+        services:
+          renderer:
+            name: custom-renderer
+            type: LoadBalancer
+            port: 4002
+    asserts:
+      - equal:
+          path: metadata.name
+          value: custom-renderer
+        template: front/service-renderer.yaml
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+        template: front/service-renderer.yaml
+      - equal:
+          path: spec.ports[0].port
+          value: 4002
+        template: front/service-renderer.yaml
