@@ -5,14 +5,9 @@ tests:
 - it: should not show deprecation notices when no deprecated fields are set
   set: {}
   asserts:
-  - equal:
+  - matchRegex:
       path: raw
-      value: "1. Get the application URL by running these commands:\n  export POD_NAME=$(kubectl\
-        \ get pods --namespace NAMESPACE -l \"app.kubernetes.io/name=n8n,app.kubernetes.io/instance=RELEASE-NAME\"\
-        \ -o jsonpath=\"{.items[0].metadata.name}\")\n  export CONTAINER_PORT=$(kubectl\
-        \ get pod --namespace NAMESPACE $POD_NAME -o jsonpath=\"{.spec.containers[0].ports[0].containerPort}\"\
-        )\n  echo \"Visit http://127.0.0.1:8080 to use your application\"\n  kubectl\
-        \ --namespace NAMESPACE port-forward $POD_NAME 8080:$CONTAINER_PORT"
+      pattern: '1\. Get the application URL by running these commands:\n\s+echo "Visit http://127\.0\.0\.1:8080 to use your application"\n\s+kubectl --namespace NAMESPACE port-forward svc/RELEASE-NAME-n8n 8080:5678\n?'
   - notMatchRegex:
       path: raw
       pattern: '!!! We detected deprecated root level .* configuration usage'
