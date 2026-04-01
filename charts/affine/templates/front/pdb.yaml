@@ -1,0 +1,17 @@
+{{- if .Values.front.podDisruptionBudget.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "front.fullname" . }}
+  labels:
+    {{- include "front.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "front.selectorLabels" . | nindent 6 }}
+  {{- if not (empty .Values.front.podDisruptionBudget.minAvailable) }}
+  minAvailable: {{ .Values.front.podDisruptionBudget.minAvailable }}
+  {{- else if not (empty .Values.front.podDisruptionBudget.maxUnavailable) }}
+  maxUnavailable: {{ .Values.front.podDisruptionBudget.maxUnavailable }}
+  {{- end }}
+{{- end }}

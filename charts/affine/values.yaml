@@ -86,7 +86,13 @@ config:
   #     sender: "AFFiNE <no-reply@affine.pro>"
 
 # Container-level security context
-containerSecurityContext: {}
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
 
 # Doc service (real-time collaboration)
 doc:
@@ -104,6 +110,13 @@ doc:
       memory: "1Gi"
   podAnnotations: {}
   podLabels: {}
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  topologySpreadConstraints: []
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
   service:
     type: ClusterIP
     port: 3010
@@ -207,6 +220,13 @@ front:
       memory: "2Gi"
   podAnnotations: {}
   podLabels: {}
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  topologySpreadConstraints: []
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
   # Internal sync and renderer services
   services:
     sync:
@@ -258,6 +278,13 @@ graphql:
       memory: "2Gi"
   podAnnotations: {}
   podLabels: {}
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  topologySpreadConstraints: []
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
   service:
     type: ClusterIP
     port: 3010
@@ -292,3 +319,7 @@ serviceAccount:
   # Defaults to release fullname if empty
   name: ""
   annotations: {}
+
+networkPolicy:
+  enabled: false
+  allowExternalFrontIngress: true

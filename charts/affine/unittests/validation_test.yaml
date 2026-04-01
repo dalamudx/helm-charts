@@ -1,0 +1,88 @@
+suite: test validation failures
+
+templates:
+  - front/deployment.yaml
+
+release:
+  name: affine
+  namespace: affine
+
+chart:
+  version: 1.0.0
+  appVersion: 0.26.3
+
+tests:
+  - it: should fail when app.externalUrl is empty
+    set:
+      app:
+        externalUrl: ""
+    asserts:
+      - failedTemplate:
+          errorPattern: "app.externalUrl"
+
+  - it: should fail when indexer is enabled without an endpoint
+    set:
+      app:
+        externalUrl: https://affine.example.com
+      db:
+        indexer:
+          enabled: true
+          endpoint: ""
+    asserts:
+      - failedTemplate:
+          errorPattern: "db.indexer.endpoint is required"
+
+  - it: should fail when front ingress is enabled without hosts
+    set:
+      app:
+        externalUrl: https://affine.example.com
+      front:
+        ingress:
+          enabled: true
+          hosts: []
+    asserts:
+      - failedTemplate:
+          errorPattern: "front.ingress.hosts"
+
+  - it: should fail when front HTTPRoute is enabled without parentRefs
+    set:
+      app:
+        externalUrl: https://affine.example.com
+      front:
+        httpRoute:
+          enabled: true
+          parentRefs: []
+          hostnames:
+            - affine.example.com
+    asserts:
+      - failedTemplate:
+          errorPattern: "front.httpRoute.parentRefs"
+
+  - it: should fail when front HTTPRoute is enabled without hostnames
+    set:
+      app:
+        externalUrl: https://affine.example.com
+      front:
+        httpRoute:
+          enabled: true
+          parentRefs:
+            - name: shared-gateway
+          hostnames: []
+    asserts:
+      - failedTemplate:
+          errorPattern: "front.httpRoute.hostnames"
+
+  - it: should render successfully when required validation inputs are satisfied
+    set:
+      app:
+        externalUrl: https://affine.example.com
+      front:
+        ingress:
+          enabled: true
+          hosts:
+            - host: affine.example.com
+              paths:
+                - path: /
+                  pathType: ImplementationSpecific
+    asserts:
+      - notFailedTemplate: {}

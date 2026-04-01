@@ -33,6 +33,7 @@ jobs:
             ~/.local/bin/gomplate
             ~/.local/bin/helm-docs
             ~/.local/bin/helm
+            ~/.local/bin/helm-unittest
             ~/.local/bin/yq
           key: ${{ runner.os }}-tools-202604
 
@@ -46,10 +47,13 @@ jobs:
           mv linux-amd64/helm ~/.local/bin/helm
           curl -sSfL https://github.com/hairyhenderson/gomplate/releases/download/v5.0.0/gomplate_linux-amd64 -o ~/.local/bin/gomplate
           curl -sSfL https://github.com/norwoodj/helm-docs/releases/download/v1.14.2/helm-docs_1.14.2_Linux_x86_64.tar.gz -o helm-docs.tar.gz
+          curl -sSfL https://github.com/helm-unittest/helm-unittest/releases/download/v0.8.2/helm-unittest-linux-amd64-0.8.2.tgz -o helm-unittest.tgz
           curl -sSfL https://github.com/mikefarah/yq/releases/download/v4.45.4/yq_linux_amd64 -o ~/.local/bin/yq
           tar -xzf helm-docs.tar.gz helm-docs
+          tar -xzf helm-unittest.tgz untt
           mv helm-docs ~/.local/bin/helm-docs
-          chmod +x ~/.local/bin/helm ~/.local/bin/gomplate ~/.local/bin/helm-docs ~/.local/bin/yq
+          mv untt ~/.local/bin/helm-unittest
+          chmod +x ~/.local/bin/helm ~/.local/bin/gomplate ~/.local/bin/helm-docs ~/.local/bin/helm-unittest ~/.local/bin/yq
           cd -
           rm -rf "$TEMP_DIR"
           helm version --short
@@ -97,6 +101,24 @@ jobs:
             rm -f "${dir}/README.md.gotmpl.tmp"
           done
           shopt -u nullglob
+
+      - name: Validate charts
+        run: |
+          for chart in affine n8n; do
+            helm_values_args=()
+            unittest_values_args=()
+
+            if [[ "$chart" == "affine" ]]; then
+              values_file="/tmp/${chart}-validation-values.yaml"
+              printf 'app:\n  externalUrl: https://affine.example.com\n' > "$values_file"
+              helm_values_args=(-f "$values_file")
+              unittest_values_args=(-v "$values_file")
+            fi
+
+            helm lint "charts/$chart" --strict "${helm_values_args[@]}"
+            helm-unittest -f 'unittests/*_test.yaml' --strict "${unittest_values_args[@]}" "charts/$chart"
+            helm template "$chart" "charts/$chart" "${helm_values_args[@]}" --debug > "/tmp/${chart}-rendered.yaml"
+          done
 
       - name: Import Helm signing key
         env:

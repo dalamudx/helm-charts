@@ -1,0 +1,78 @@
+suite: test network policies
+
+templates:
+  - networkpolicy.yaml
+
+release:
+  name: affine
+  namespace: affine
+
+chart:
+  version: 1.0.0
+  appVersion: 0.26.3
+
+tests:
+  - it: should not render network policies by default
+    asserts:
+      - hasDocuments:
+          count: 0
+        template: networkpolicy.yaml
+
+  - it: should render front, graphql, and doc network policies when enabled
+    set:
+      networkPolicy:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 3
+        template: networkpolicy.yaml
+
+  - it: should allow external ingress to front by default when network policies are enabled
+    set:
+      networkPolicy:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.ingress[0].from[0]
+          value: {}
+        documentIndex: 0
+        template: networkpolicy.yaml
+
+  - it: should restrict front ingress to namespace pods when external ingress is disabled
+    set:
+      networkPolicy:
+        enabled: true
+        allowExternalFrontIngress: false
+    asserts:
+      - equal:
+          path: spec.ingress[0].from[0].podSelector
+          value: {}
+        documentIndex: 0
+        template: networkpolicy.yaml
+
+  - it: should allow graphql ingress only from front pods
+    set:
+      networkPolicy:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.ingress[0].from[0].podSelector.matchLabels["app.kubernetes.io/component"]
+          value: front
+        documentIndex: 1
+        template: networkpolicy.yaml
+
+  - it: should allow doc ingress from both front and graphql pods
+    set:
+      networkPolicy:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.ingress[0].from[0].podSelector.matchLabels["app.kubernetes.io/component"]
+          value: front
+        documentIndex: 2
+        template: networkpolicy.yaml
+      - equal:
+          path: spec.ingress[0].from[1].podSelector.matchLabels["app.kubernetes.io/component"]
+          value: graphql
+        documentIndex: 2
+        template: networkpolicy.yaml

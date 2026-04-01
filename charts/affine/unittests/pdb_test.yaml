@@ -1,0 +1,67 @@
+suite: test pod disruption budgets
+
+templates:
+  - front/pdb.yaml
+  - graphql/pdb.yaml
+  - doc/pdb.yaml
+
+release:
+  name: affine
+  namespace: affine
+
+chart:
+  version: 1.0.0
+  appVersion: 0.26.3
+
+tests:
+  - it: should not render a front PDB by default
+    asserts:
+      - hasDocuments:
+          count: 0
+        template: front/pdb.yaml
+
+  - it: should render a front PDB with minAvailable when enabled
+    set:
+      front:
+        podDisruptionBudget:
+          enabled: true
+          minAvailable: 1
+    asserts:
+      - hasDocuments:
+          count: 1
+        template: front/pdb.yaml
+      - equal:
+          path: spec.minAvailable
+          value: 1
+        template: front/pdb.yaml
+
+  - it: should render a graphql PDB with maxUnavailable when configured
+    set:
+      graphql:
+        podDisruptionBudget:
+          enabled: true
+          minAvailable: null
+          maxUnavailable: 1
+    asserts:
+      - hasDocuments:
+          count: 1
+        template: graphql/pdb.yaml
+      - equal:
+          path: spec.maxUnavailable
+          value: 1
+        template: graphql/pdb.yaml
+
+  - it: should render a doc PDB with the doc selector labels when enabled
+    set:
+      doc:
+        podDisruptionBudget:
+          enabled: true
+          minAvailable: 1
+    asserts:
+      - hasDocuments:
+          count: 1
+        template: doc/pdb.yaml
+      - equal:
+          path: spec.selector.matchLabels["app.kubernetes.io/component"]
+          value: doc
+        template: doc/pdb.yaml

@@ -504,6 +504,69 @@ tests:
           value: custom-sa
         template: graphql/deployment.yaml
 
+  - it: should apply nodeSelector when graphql.nodeSelector is set
+    set:
+      graphql:
+        nodeSelector:
+          kubernetes.io/os: linux
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector["kubernetes.io/os"]
+          value: linux
+        template: graphql/deployment.yaml
+
+  - it: should apply tolerations when graphql.tolerations is set
+    set:
+      graphql:
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "graphql"
+            effect: "NoSchedule"
+    asserts:
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: "dedicated"
+            operator: "Equal"
+            value: "graphql"
+            effect: "NoSchedule"
+        template: graphql/deployment.yaml
+
+  - it: should apply affinity when graphql.affinity is set
+    set:
+      graphql:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  topologyKey: kubernetes.io/hostname
+                  labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: affine
+    asserts:
+      - equal:
+          path: spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].weight
+          value: 100
+        template: graphql/deployment.yaml
+
+  - it: should apply topology spread constraints when graphql.topologySpreadConstraints is set
+    set:
+      graphql:
+        topologySpreadConstraints:
+          - maxSkew: 1
+            topologyKey: topology.kubernetes.io/zone
+            whenUnsatisfiable: ScheduleAnyway
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: affine
+    asserts:
+      - equal:
+          path: spec.template.spec.topologySpreadConstraints[0].topologyKey
+          value: topology.kubernetes.io/zone
+        template: graphql/deployment.yaml
+
   # --- Persistence / VolumeMount -----------------------------------
   - it: should not have a data volumeMount when persistence is disabled
     set:

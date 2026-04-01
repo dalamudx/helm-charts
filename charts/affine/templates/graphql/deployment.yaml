@@ -1,3 +1,4 @@
+{{- include "affine.validate" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -86,3 +87,19 @@ spec:
           secret:
             secretName: {{ include "affine.fullname" . }}-config
         {{- end }}
+      {{- with .Values.graphql.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.graphql.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.graphql.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.graphql.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

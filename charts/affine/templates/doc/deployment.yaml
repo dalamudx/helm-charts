@@ -1,3 +1,4 @@
+{{- include "affine.validate" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -96,5 +97,9 @@ spec:
       {{- end }}
       {{- with .Values.doc.tolerations }}
       tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.doc.topologySpreadConstraints }}
+      topologySpreadConstraints:
         {{- toYaml . | nindent 8 }}
       {{- end }}

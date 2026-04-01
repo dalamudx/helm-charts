@@ -37,6 +37,12 @@ To uninstall/delete the `my-affine` deployment:
 helm uninstall my-affine
 ```
 
+## Upgrade Notes
+
+- Back up your AFFiNE database before upgrading in production.
+- This chart runs the GraphQL migration job as a `pre-install,pre-upgrade` Helm hook.
+- Review chart values carefully before rollback if a release included schema changes.
+
 ## Parameters
 
 

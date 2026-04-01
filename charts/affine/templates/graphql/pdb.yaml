@@ -1,0 +1,17 @@
+{{- if .Values.graphql.podDisruptionBudget.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "graphql.fullname" . }}
+  labels:
+    {{- include "graphql.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "graphql.selectorLabels" . | nindent 6 }}
+  {{- if not (empty .Values.graphql.podDisruptionBudget.minAvailable) }}
+  minAvailable: {{ .Values.graphql.podDisruptionBudget.minAvailable }}
+  {{- else if not (empty .Values.graphql.podDisruptionBudget.maxUnavailable) }}
+  maxUnavailable: {{ .Values.graphql.podDisruptionBudget.maxUnavailable }}
+  {{- end }}
+{{- end }}
