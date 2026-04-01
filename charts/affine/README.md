@@ -6,13 +6,12 @@ Helm chart for AFFiNE - The next-gen knowledge base.
 
 This chart bootstraps an [AFFiNE](https://github.com/toeverything/AFFiNE) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 
-## TL;DR
+## Chart Info
 
-```bash
-helm repo add dev-charts https://dalamudx.github.io/helm-charts
-helm repo update
-helm install my-affine dev-charts/affine
-```
+| Field | Value |
+|-------|-------|
+| Version | ![Chart](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fgithub.com%2Fdalamudx%2Fhelm-charts%2Fraw%2Frefs%2Fheads%2Fmain%2Fcharts%2Faffine%2FChart.yaml&query=%24.version&style=flat-square&label=Chart) ![App](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fgithub.com%2Fdalamudx%2Fhelm-charts%2Fraw%2Frefs%2Fheads%2Fmain%2Fcharts%2Faffine%2FChart.yaml&query=%24.appVersion&style=flat-square&label=App) |
+| Source | <a href="https://github.com/toeverything/AFFiNE">https://github.com/toeverything/AFFiNE</a><br><a href="https://github.com/dalamudx/helm-charts">https://github.com/dalamudx/helm-charts</a> |
 
 ## Prerequisites
 
@@ -35,12 +34,11 @@ helm install my-affine dev-charts/affine -f your-values.yaml
 To uninstall/delete the `my-affine` deployment:
 
 ```bash
-helm uninstall my-affinebash
+helm uninstall my-affine
 ```
 
 ## Parameters
 
-## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
@@ -57,14 +55,4 @@ helm uninstall my-affinebash
 | global.tag | string | `""` | Image tag (defaults to chart appVersion) |
 | persistence.enabled | bool | `false` | Enable PVC for blob/avatar storage |
 
-*(See [values.yaml](values.yaml) for the full list of configuration options.)*
-
-## Chart Info
-
-![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.26.2](https://img.shields.io/badge/AppVersion-0.26.2-informational?style=flat-square)
-
-| Field | Value |
-|-------|-------|
-| Chart Version | `1.0.1` |
-| App Version | `0.26.2` |
-| Source | <a href="https://github.com/toeverything/AFFiNE">https://github.com/toeverything/AFFiNE</a><br><a href="https://github.com/dalamudx/helm-charts">https://github.com/dalamudx/helm-charts</a> |
+*(See [values.yaml](https://github.com/dalamudx/helm-charts/raw/refs/heads/main/charts/affine/values.yaml) for the full list of configuration options.)*

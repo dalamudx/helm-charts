@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pages: write
       actions: write
     steps:
       - name: Checkout
@@ -23,10 +22,8 @@ jobs:
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git fetch --prune --unshallow || true
-          git fetch --all
           mkdir -p ~/.local/bin
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       
       - name: Cache binaries
         id: cache-tools
@@ -36,60 +33,38 @@ jobs:
             ~/.local/bin/gomplate
             ~/.local/bin/helm-docs
             ~/.local/bin/helm
-          key: ${{ runner.os }}-tools-202603
+            ~/.local/bin/yq
+          key: ${{ runner.os }}-tools-202604
 
       - name: Install binaries
         if: steps.cache-tools.outputs.cache-hit != 'true'
         run: |
           TEMP_DIR=$(mktemp -d)
-          cd $TEMP_DIR
+          cd "$TEMP_DIR"
           curl -sSfL https://get.helm.sh/helm-v3.18.3-linux-amd64.tar.gz -o helm.tar.gz
           tar -xzf helm.tar.gz
           mv linux-amd64/helm ~/.local/bin/helm
           curl -sSfL https://github.com/hairyhenderson/gomplate/releases/download/v5.0.0/gomplate_linux-amd64 -o ~/.local/bin/gomplate
           curl -sSfL https://github.com/norwoodj/helm-docs/releases/download/v1.14.2/helm-docs_1.14.2_Linux_x86_64.tar.gz -o helm-docs.tar.gz
+          curl -sSfL https://github.com/mikefarah/yq/releases/download/v4.45.4/yq_linux_amd64 -o ~/.local/bin/yq
           tar -xzf helm-docs.tar.gz helm-docs
           mv helm-docs ~/.local/bin/helm-docs
-          chmod +x ~/.local/bin/helm ~/.local/bin/gomplate ~/.local/bin/helm-docs
+          chmod +x ~/.local/bin/helm ~/.local/bin/gomplate ~/.local/bin/helm-docs ~/.local/bin/yq
           cd -
-          rm -rf $TEMP_DIR
+          rm -rf "$TEMP_DIR"
           helm version --short
 
       - name: Install tools
         run: |
-          sudo apt-get update && sudo apt-get install -y gettext-base jq
+          sudo apt-get update && sudo apt-get install -y gettext-base jq gnupg
 
       - name: Configure Environment
-        id: config
         run: |
-          TARGET_REPO="${GITHUB_REPOSITORY}"
           REPO_OWNER="${GITHUB_REPOSITORY_OWNER:-${GITHUB_REPOSITORY%%/*}}"
           REPO_NAME="${GITHUB_REPOSITORY##*/}"
           
-          SERVER_URL_BASE=$(echo "${GITHUB_SERVER_URL}" | sed 's|/api/v1.*||')
-          
-          echo "CR_OWNER=${REPO_OWNER}" >> $GITHUB_ENV
-          echo "CR_GIT_REPO=${REPO_NAME}" >> $GITHUB_ENV
-          
-          PUBLIC_URL="https://${REPO_OWNER}.github.io/${REPO_NAME}"
-          echo "PUBLIC_REPO_URL=${PUBLIC_URL}" >> $GITHUB_ENV
-          
-          if [[ "${SERVER_URL_BASE}" == *"gitea"* || "${SERVER_URL_BASE}" == *"aoodc"* || -n "${GITEA_ACTIONS}" ]]; then
-            echo "Detected internal Gitea environment"
-            
-            DOMAIN=$(echo "${SERVER_URL_BASE}" | sed -e 's|^[^/]*//||' -e 's|:[0-9]*||' -e 's|^gitea\.||')
-            echo "REPO_URL=https://${REPO_OWNER}.pages.${DOMAIN}/${REPO_NAME}" >> $GITHUB_ENV
-            
-            echo "CR_GIT_BASE_URL=${SERVER_URL_BASE}/api/v1/" >> $GITHUB_ENV
-            echo "CR_GIT_UPLOAD_URL=${SERVER_URL_BASE}/api/v1/" >> $GITHUB_ENV
-            echo "GIT_PLATFORM=gitea" >> $GITHUB_ENV
-            echo "GIT_REPO_URL=${SERVER_URL_BASE}/${TARGET_REPO}" >> $GITHUB_ENV
-          else
-            echo "Detected GitHub environment"
-            echo "REPO_URL=${PUBLIC_URL}" >> $GITHUB_ENV
-            echo "GIT_PLATFORM=github" >> $GITHUB_ENV
-            echo "GIT_REPO_URL=${SERVER_URL_BASE}/${TARGET_REPO}" >> $GITHUB_ENV
-          fi
+          echo "REPO_URL=https://${REPO_OWNER}.github.io/${REPO_NAME}" >> $GITHUB_ENV
+          echo "GITHUB_REPO_URL=https://github.com/${GITHUB_REPOSITORY}" >> $GITHUB_ENV
 
       - name: Prepare Index Data
         run: |
@@ -97,7 +72,7 @@ jobs:
           shopt -s nullglob
           rm -f /tmp/charts-list.jsonl
           for f in charts/*/Chart.yaml; do
-            yq -o=json '.' "$f" | jq -c '{name: .name, description: .description, version: .version}' >> /tmp/charts-list.jsonl
+            yq -o=json '.' "$f" | jq -c '{name: .name, description: .description, version: .version, appVersion: (.appVersion // "")}' >> /tmp/charts-list.jsonl
           done
           jq -s '{charts: .}' /tmp/charts-list.jsonl > /tmp/charts-data.json
           shopt -u nullglob
@@ -115,7 +90,7 @@ jobs:
             REPO_URL="${REPO_URL}" envsubst '${REPO_URL}' < "$tmpl" > "${dir}/README.md.gotmpl.tmp"
             REPO_URL="${REPO_URL}" helm-docs \
               --chart-search-root="${dir}" \
-              --template-files="$(realpath ${dir}/README.md.gotmpl.tmp)" \
+              --template-files="$(realpath "${dir}/README.md.gotmpl.tmp")" \
               --output-file="README.md" \
               --ignore-non-descriptions \
               --log-level=warn
@@ -123,30 +98,58 @@ jobs:
           done
           shopt -u nullglob
 
-      - name: Prepare cr config
+      - name: Import Helm signing key
+        env:
+          HELM_GPG_PRIVATE_KEY: ${{ secrets.HELM_GPG_PRIVATE_KEY }}
+          HELM_GPG_PASSPHRASE: ${{ secrets.HELM_GPG_PASSPHRASE }}
+          HELM_GPG_KEY_UID: ${{ secrets.HELM_GPG_KEY_UID }}
         run: |
-          echo "charts_repo_url: ${{ env.REPO_URL }}" > .cr.yaml
+          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
+          mkdir -p "$GNUPGHOME" "${RUNNER_TEMP}/helm-gpg"
+          chmod 700 "$GNUPGHOME"
+
+          if [[ "$HELM_GPG_PRIVATE_KEY" == *"BEGIN PGP PRIVATE KEY BLOCK"* ]]; then
+            printf '%s' "$HELM_GPG_PRIVATE_KEY" > "${RUNNER_TEMP}/helm-gpg/private.key"
+          else
+            printf '%s' "$HELM_GPG_PRIVATE_KEY" | base64 -d > "${RUNNER_TEMP}/helm-gpg/private.key"
+          fi
+
+          gpg --batch --pinentry-mode loopback --passphrase "$HELM_GPG_PASSPHRASE" --import "${RUNNER_TEMP}/helm-gpg/private.key"
+          printf '%s' "$HELM_GPG_PASSPHRASE" > "${RUNNER_TEMP}/helm-gpg/passphrase"
+          chmod 600 "${RUNNER_TEMP}/helm-gpg/passphrase"
+          gpg --batch --pinentry-mode loopback --passphrase "$HELM_GPG_PASSPHRASE" --output "${RUNNER_TEMP}/helm-gpg/secring.gpg" --export-secret-keys "$HELM_GPG_KEY_UID"
+
+          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
+          echo "HELM_GPG_KEYRING=${RUNNER_TEMP}/helm-gpg/secring.gpg" >> "$GITHUB_ENV"
+          echo "HELM_GPG_PASSPHRASE_FILE=${RUNNER_TEMP}/helm-gpg/passphrase" >> "$GITHUB_ENV"
+
+      - name: Prepare cr config
+        env:
+          HELM_GPG_KEY_UID: ${{ secrets.HELM_GPG_KEY_UID }}
+        run: |
+          cat > .cr.yaml <<EOF
+          charts_repo_url: ${{ env.REPO_URL }}
+          package-path: .cr-release-packages
+          sign: true
+          key: ${HELM_GPG_KEY_UID}
+          keyring: ${{ env.HELM_GPG_KEYRING }}
+          passphrase-file: ${{ env.HELM_GPG_PASSPHRASE_FILE }}
+          EOF
 
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.7.0
         with:
           config: .cr.yaml
-          charts_dir: charts
           pages_branch: pages
           skip_existing: true
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          CR_OWNER: "${{ env.CR_OWNER }}"
-          CR_GIT_REPO: "${{ env.CR_GIT_REPO }}"
-          CR_GIT_BASE_URL: "${{ env.CR_GIT_BASE_URL }}"
-          CR_GIT_UPLOAD_URL: "${{ env.CR_GIT_UPLOAD_URL }}"
 
       - name: Update index.html on pages branch
         env:
           REPO_URL: ${{ env.REPO_URL }}
-          GIT_PLATFORM: ${{ env.GIT_PLATFORM }}
-          GIT_REPO_URL: ${{ env.GIT_REPO_URL }}
+          GITHUB_REPO_URL: ${{ env.GITHUB_REPO_URL }}
         run: |
           git reset --hard HEAD
           git clean -fd

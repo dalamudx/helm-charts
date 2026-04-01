@@ -6,13 +6,12 @@ Helm chart for n8n - A workflow automation platform that gives technical teams t
 
 This chart bootstraps an [n8n](https://n8n.io) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 
-## TL;DR
+## Chart Info
 
-```bash
-helm repo add dev-charts https://dalamudx.github.io/helm-charts
-helm repo update
-helm install my-n8n dev-charts/n8n
-```
+| Field | Value |
+|-------|-------|
+| Version | ![Chart](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fgithub.com%2Fdalamudx%2Fhelm-charts%2Fraw%2Frefs%2Fheads%2Fmain%2Fcharts%2Fn8n%2FChart.yaml&query=%24.version&style=flat-square&label=Chart) ![App](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fgithub.com%2Fdalamudx%2Fhelm-charts%2Fraw%2Frefs%2Fheads%2Fmain%2Fcharts%2Fn8n%2FChart.yaml&query=%24.appVersion&style=flat-square&label=App) |
+| Source | <a href="https://github.com/n8n-io/n8n">https://github.com/n8n-io/n8n</a><br><a href="https://github.com/dalamudx/helm-charts">https://github.com/dalamudx/helm-charts</a> |
 
 ## Prerequisites
 
@@ -40,7 +39,6 @@ helm uninstall my-n8n
 
 ## Parameters
 
-## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
@@ -81,14 +79,4 @@ helm uninstall my-n8n
 | taskRunners.image.tag | string | `""` | Image tag (defaults to chart appVersion). |
 | webhook.url | string | `""` | Webhook URL (include http/https schema). |
 
-*(See [values.yaml](values.yaml) for the full list of configuration options.)*
-
-## Chart Info
-
-![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.7.4](https://img.shields.io/badge/AppVersion-2.7.4-informational?style=flat-square)
-
-| Field | Value |
-|-------|-------|
-| Chart Version | `1.0.1` |
-| App Version | `2.7.4` |
-| Source | <a href="https://github.com/n8n-io/n8n">https://github.com/n8n-io/n8n</a><br><a href="https://github.com/dalamudx/helm-charts">https://github.com/dalamudx/helm-charts</a> |
+*(See [values.yaml](https://github.com/dalamudx/helm-charts/raw/refs/heads/main/charts/n8n/values.yaml) for the full list of configuration options.)*

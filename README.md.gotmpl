@@ -13,10 +13,10 @@ helm repo update
 
 ## Available Charts
 
-| Chart | Description |
-|---|---|
+| Chart | Description | Chart Version | App Version |
+|---|---|---|---|
 {{ range (datasource "charts").charts -}}
-| **{{ .name }}** | {{ .description }} |
+| **{{ .name }}** | {{ .description }} | ![Chart](https://img.shields.io/badge/Chart-{{ .version }}-informational?style=flat-square) | ![App](https://img.shields.io/badge/App-{{ .appVersion }}-informational?style=flat-square) |
 {{ end }}
 ## Installation
 
