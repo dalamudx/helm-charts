@@ -230,9 +230,48 @@
 
     <main>
         <div class="card">
+            <h2>Chart Versions</h2>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; color: var(--text-main);">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <th style="text-align: left; padding: 0.75rem 0; color: var(--text-muted); font-weight: 600;">App</th>
+                            <th style="text-align: left; padding: 0.75rem 0; color: var(--text-muted); font-weight: 600;">Chart Version</th>
+                            <th style="text-align: left; padding: 0.75rem 0; color: var(--text-muted); font-weight: 600;">App Version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 0.9rem 0;">affine</td>
+                            <td style="padding: 0.9rem 0;"><img alt="Chart 1.0.4" src="https://img.shields.io/badge/Chart-1.0.4-informational?style=flat-square"></td>
+                            <td style="padding: 0.9rem 0;"><img alt="App 0.26.3" src="https://img.shields.io/badge/App-0.26.3-informational?style=flat-square"></td>
+                        </tr>
+
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 0.9rem 0;">n8n</td>
+                            <td style="padding: 0.9rem 0;"><img alt="Chart 1.0.33" src="https://img.shields.io/badge/Chart-1.0.33-informational?style=flat-square"></td>
+                            <td style="padding: 0.9rem 0;"><img alt="App 2.14.2" src="https://img.shields.io/badge/App-2.14.2-informational?style=flat-square"></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Prerequisites</h2>
+            <ul style="padding-left: 1.5rem; color: var(--text-muted); list-style-type: disc;">
+                <li style="margin-bottom: 0.5rem;">Kubernetes 1.23+</li>
+                <li style="margin-bottom: 0.5rem;">Helm 3.0+</li>
+                <li style="margin-bottom: 0.5rem;">Dependencies (check chart README documentation)</li>
+            </ul>
+        </div>
+
+        <div class="card">
             <h2>Setup</h2>
             <div class="step">
-                <div class="step-title"><span class="step-number">1</span>Add the repository</div>
+                <div class="step-title">Add the repository</div>
                 <div class="code-block">
                     <code id="repo-add-cmd" class="code-content">helm repo add dev-charts https://dalamudx.github.io/helm-charts
 helm repo update</code>
@@ -242,7 +281,7 @@ helm repo update</code>
         </div>
 
         <div class="card">
-            <h2>Available Charts</h2>
+            <h2>Install</h2>
 
             <div class="step">
                 <div class="step-title">affine</div>
@@ -264,14 +303,6 @@ helm repo update</code>
 
         </div>
 
-        <div class="card">
-            <h2>Prerequisites</h2>
-            <ul style="padding-left: 1.5rem; color: var(--text-muted); list-style-type: disc;">
-                <li style="margin-bottom: 0.5rem;">Kubernetes 1.23+</li>
-                <li style="margin-bottom: 0.5rem;">Helm 3.0+</li>
-                <li style="margin-bottom: 0.5rem;">Dependencies (check individual charts)</li>
-            </ul>
-        </div>
     </main>
 
     <script>
