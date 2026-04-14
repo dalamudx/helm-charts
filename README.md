@@ -15,8 +15,8 @@ helm repo update
 
 | Chart | Description | Chart Version | App Version |
 |---|---|---|---|
-| **affine** | Helm chart for AFFiNE - The next-gen knowledge base. | ![Chart](https://img.shields.io/badge/Chart-1.0.4-informational?style=flat-square) | ![App](https://img.shields.io/badge/App-0.26.3-informational?style=flat-square) |
-| **n8n** | Helm chart for n8n - A workflow automation platform that gives technical teams the flexibility of code with the speed of no-code. | ![Chart](https://img.shields.io/badge/Chart-1.0.33-informational?style=flat-square) | ![App](https://img.shields.io/badge/App-2.14.2-informational?style=flat-square) |
+| **affine** | Helm chart for AFFiNE - The next-gen knowledge base. | ![Chart](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fgithub.com%2Fdalamudx%2Fhelm-charts%2Fraw%2Frefs%2Fheads%2Fmain%2Fcharts%2Faffine%2FChart.yaml&query=%24.version&style=flat-square&label=Chart) | ![App](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fgithub.com%2Fdalamudx%2Fhelm-charts%2Fraw%2Frefs%2Fheads%2Fmain%2Fcharts%2Faffine%2FChart.yaml&query=%24.appVersion&style=flat-square&label=App) |
+| **n8n** | Helm chart for n8n - A workflow automation platform that gives technical teams the flexibility of code with the speed of no-code. | ![Chart](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fgithub.com%2Fdalamudx%2Fhelm-charts%2Fraw%2Frefs%2Fheads%2Fmain%2Fcharts%2Fn8n%2FChart.yaml&query=%24.version&style=flat-square&label=Chart) | ![App](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fgithub.com%2Fdalamudx%2Fhelm-charts%2Fraw%2Frefs%2Fheads%2Fmain%2Fcharts%2Fn8n%2FChart.yaml&query=%24.appVersion&style=flat-square&label=App) |
 
 ## Installation
 
