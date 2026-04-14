@@ -66,9 +66,9 @@ jobs:
         run: |
           REPO_OWNER="${GITHUB_REPOSITORY_OWNER:-${GITHUB_REPOSITORY%%/*}}"
           REPO_NAME="${GITHUB_REPOSITORY##*/}"
-          
-          echo "REPO_URL=https://${REPO_OWNER}.github.io/${REPO_NAME}" >> $GITHUB_ENV
-          echo "GITHUB_REPO_URL=https://github.com/${GITHUB_REPOSITORY}" >> $GITHUB_ENV
+          echo "REPO_OWNER=$REPO_OWNER" >> "$GITHUB_ENV"
+          echo "REPO_URL=https://${REPO_OWNER}.${{ vars.GIT_PAGES_DOMAIN }}/${REPO_NAME}" >> $GITHUB_ENV
+          echo "GITHUB_REPO_URL=${{ vars.GIT_BASE_URL }}/${GITHUB_REPOSITORY}" >> $GITHUB_ENV
 
       - name: Prepare Index Data
         run: |
@@ -150,6 +150,10 @@ jobs:
           HELM_GPG_KEY_UID: ${{ secrets.HELM_GPG_KEY_UID }}
         run: |
           cat > .cr.yaml <<EOF
+          owner: ${{ env.REPO_OWNER }}
+          git-repo: helm-charts
+          git-base-url: ${{ vars.GIT_API_BASE_URL }}
+          git-upload-url: ${{ vars.GIT_UPLOAD_URL }}
           charts_repo_url: ${{ env.REPO_URL }}
           package-path: .cr-release-packages
           sign: true
