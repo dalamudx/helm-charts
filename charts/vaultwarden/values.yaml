@@ -14,6 +14,10 @@ workload:
   podAnnotations: {}
   podLabels: {}
   priorityClassName: ""
+  # -- Optional pod DNS policy override.
+  dnsPolicy: ""
+  # -- Optional pod DNS configuration override.
+  dnsConfig: {}
   nodeSelector: {}
   affinity: {}
   tolerations: []
@@ -189,13 +193,13 @@ database:
     existingSecret: ""
     username:
       value: ""
-      existingSecretKey: username
+      existingSecretKey: DATABASE_USERNAME
     password:
       value: ""
-      existingSecretKey: password
+      existingSecretKey: DATABASE_PASSWORD
     connectionString:
       value: ""
-      existingSecretKey: url
+      existingSecretKey: DATABASE_URL
 
 smtp:
   # -- Enable SMTP-dependent features such as invitations and email 2FA.
@@ -208,10 +212,10 @@ smtp:
   fromName: ""
   username:
     value: ""
-    existingSecretKey: username
+    existingSecretKey: SMTP_USERNAME
   password:
     value: ""
-    existingSecretKey: password
+    existingSecretKey: SMTP_PASSWORD
   authMechanism: Plain
   timeout: "15"
   useSendmail: false

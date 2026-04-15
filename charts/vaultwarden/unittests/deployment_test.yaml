@@ -97,3 +97,36 @@ tests:
       - hasDocuments:
           count: 3
         template: templates/secret.yaml
+
+  - it: should set dnsPolicy when workload.dnsPolicy is set
+    set:
+      workload:
+        dnsPolicy: ClusterFirst
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: ClusterFirst
+        template: templates/deployment.yaml
+
+  - it: should set dnsConfig when workload.dnsConfig is set
+    set:
+      workload:
+        dnsConfig:
+          nameservers:
+            - 1.1.1.1
+          options:
+            - name: ndots
+              value: "2"
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsConfig.nameservers[0]
+          value: 1.1.1.1
+        template: templates/deployment.yaml
+      - equal:
+          path: spec.template.spec.dnsConfig.options[0].name
+          value: ndots
+        template: templates/deployment.yaml
+      - equal:
+          path: spec.template.spec.dnsConfig.options[0].value
+          value: "2"
+        template: templates/deployment.yaml

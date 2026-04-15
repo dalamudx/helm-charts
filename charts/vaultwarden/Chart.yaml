@@ -1,9 +1,9 @@
 apiVersion: v2
 name: vaultwarden
 description: Helm chart for Vaultwarden - an unofficial Bitwarden-compatible server written in Rust.
-icon: https://github.com/dani-garcia/vaultwarden/blob/main/resources/vaultwarden-icon.svg
+icon: https://raw.githubusercontent.com/dani-garcia/vaultwarden/refs/heads/main/resources/vaultwarden-icon.svg
 type: application
-version: 1.0.0
+version: 1.0.1
 appVersion: "1.35.5"
 kubeVersion: ">=1.24.0-0"
 home: https://github.com/dani-garcia/vaultwarden

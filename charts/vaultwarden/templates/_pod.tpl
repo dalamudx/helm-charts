@@ -209,6 +209,13 @@ volumes:
 {{- with .Values.workload.priorityClassName }}
 priorityClassName: {{ . | quote }}
 {{- end }}
+{{- with .Values.workload.dnsPolicy }}
+dnsPolicy: {{ . }}
+{{- end }}
+{{- with .Values.workload.dnsConfig }}
+dnsConfig:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
 {{- with .Values.workload.nodeSelector }}
 nodeSelector:
   {{- toYaml . | nindent 2 }}

@@ -10,7 +10,7 @@ This chart bootstraps a [Vaultwarden](https://github.com/dani-garcia/vaultwarden
 
 | Field | Value |
 |-------|-------|
-| Version | ![Chart](https://img.shields.io/badge/Chart-1.0.0-informational?style=flat-square) ![App](https://img.shields.io/badge/App-1.35.0-informational?style=flat-square) |
+| Version | ![Chart](https://img.shields.io/badge/Chart-1.0.0-informational?style=flat-square) ![App](https://img.shields.io/badge/App-1.35.5-informational?style=flat-square) |
 | Source | <a href="https://github.com/dani-garcia/vaultwarden">https://github.com/dani-garcia/vaultwarden</a><br><a href="https://github.com/dalamudx/helm-charts">https://github.com/dalamudx/helm-charts</a> |
 
 ## Prerequisites
@@ -38,30 +38,39 @@ helm uninstall my-vaultwarden
 
 ## Parameters
 
-| Key | Default | Description |
-|-----|---------|-------------|
-| `workload.kind` | `Deployment` | Selects whether Vaultwarden runs as a Deployment or StatefulSet. |
-| `workload.replicaCount` | `1` | Number of replicas. Keep `1` unless you explicitly accept Vaultwarden's upstream multi-replica caveats. |
-| `image.repository` | `vaultwarden/server` | Vaultwarden container image repository. |
-| `image.tag` | `chart appVersion` | Container image tag when you do not pin a custom version. |
-| `service.type` | `ClusterIP` | Kubernetes Service type for the main HTTP endpoint. |
-| `service.port` | `80` | Service port exposed inside the cluster. |
-| `config.domain` | `""` | Public Vaultwarden URL. Set this to the URL users access, including scheme and optional path. |
-| `config.webVaultEnabled` | `true` | Enables the built-in web vault UI. |
-| `config.webVaultFolder` | `web-vault/` | Filesystem path for bundled web vault assets. |
-| `config.rocket.port` | `8080` | Container listen port used by the Vaultwarden process. |
-| `database.type` | `sqlite` | Database backend: `sqlite`, `postgresql`, or `mysql`. |
-| `database.sqlite.path` | `/data/db.sqlite3` | SQLite database file path used when `database.type=sqlite`. |
-| `database.external.host` | `""` | External PostgreSQL/MySQL host used in non-sqlite modes. |
-| `storage.enabled` | `false` | Enables persistent storage for Vaultwarden data. |
-| `storage.existingClaim` | `""` | Existing PVC to mount instead of creating one. |
-| `storage.size` | `10Gi` | PVC size when the chart manages storage. |
-| `websocket.enabled` | `true` | Enables Vaultwarden websocket notifications. |
-| `ingress.enabled` | `false` | Enables Ingress-based external access. |
-| `httpRoute.enabled` | `false` | Enables Gateway API HTTPRoute-based external access. |
-| `smtp.enabled` | `false` | Enables SMTP-dependent features such as invitations and email 2FA. |
-| `smtp.host` | `""` | SMTP server host. |
-| `adminToken.existingSecret` | `""` | Existing Secret containing `ADMIN_TOKEN`. Preferred over inline token values. |
-| `sso.enabled` | `false` | Enables OpenID Connect SSO support. |
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| adminToken.existingSecret | string | `""` | Existing Secret containing the admin token. |
+| config.dataFolder | string | `"/data"` | Base data folder used by Vaultwarden. |
+| config.domain | string | `""` | Public Vaultwarden URL, including scheme and optional path. |
+| config.rocket.address | string | `"0.0.0.0"` | Rocket bind address. |
+| config.rocket.port | int | `8080` | Rocket bind port. |
+| config.rocket.workers | int | `10` | Number of Rocket worker threads. |
+| config.webVaultEnabled | bool | `true` | Enable the built-in web vault UI. |
+| config.webVaultFolder | string | `"web-vault/"` | Folder containing the bundled web vault assets. |
+| database.connectionRetries | int | `15` | Number of startup retries while waiting for the database. |
+| database.external.host | string | `""` | External PostgreSQL/MySQL host used in non-sqlite modes. |
+| database.sqlite.path | string | `"/data/db.sqlite3"` | SQLite database file path. |
+| database.type | string | `"sqlite"` | Database backend used by Vaultwarden. |
+| fullnameOverride | string | `""` | Override the fully qualified release name. |
+| httpRoute.enabled | bool | `false` | Enable Gateway API HTTPRoute-based external access. |
+| image.registry | string | `"docker.io"` | Container image registry. |
+| image.repository | string | `"vaultwarden/server"` | Container image repository. |
+| image.tag | string | `""` | Container image tag. Defaults to the chart appVersion when empty. |
+| ingress.enabled | bool | `false` | Enable Ingress-based external access. |
+| nameOverride | string | `""` | Override the chart name. |
+| service.port | int | `80` | Service port exposed inside the cluster. |
+| service.targetPort | string | `nil` | Target container port. Defaults to `config.rocket.port` when unset. |
+| service.type | string | `"ClusterIP"` | Kubernetes Service type. |
+| smtp.enabled | bool | `false` | Enable SMTP-dependent features such as invitations and email 2FA. |
+| sso.enabled | bool | `false` | Enable OpenID Connect SSO support. |
+| storage.enabled | bool | `false` | Enable persistent storage for Vaultwarden data. |
+| storage.existingClaim | string | `""` | Existing PVC to mount instead of creating one. |
+| storage.size | string | `"10Gi"` | Persistent volume size when the chart manages storage. |
+| websocket.enabled | bool | `true` | Enable Vaultwarden websocket notifications. |
+| workload.dnsConfig | object | `{}` | Optional pod DNS configuration override. |
+| workload.dnsPolicy | string | `""` | Optional pod DNS policy override. |
+| workload.kind | string | `"Deployment"` | Workload kind. Valid values: `Deployment` or `StatefulSet`. |
+| workload.replicaCount | int | `1` | Number of Vaultwarden replicas. Keep `1` unless you explicitly accept the upstream multi-replica caveats. |
 
 *(See [values.yaml](https://github.com/dalamudx/helm-charts/raw/refs/heads/main/charts/vaultwarden/values.yaml) for the full list of configuration options.)*
