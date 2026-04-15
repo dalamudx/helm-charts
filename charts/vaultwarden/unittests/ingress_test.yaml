@@ -1,0 +1,93 @@
+suite: test vaultwarden ingress
+
+templates:
+  - templates/ingress.yaml
+
+release:
+  name: vaultwarden
+  namespace: vaultwarden
+
+chart:
+  version: 1.0.0
+  appVersion: 1.0.0
+
+tests:
+  - it: should not create ingress when ingress.enabled is false
+    set:
+      ingress:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should set annotations and labels when ingress metadata is configured
+    set:
+      ingress:
+        enabled: true
+        annotations:
+          test-annotation: enabled
+        labels:
+          test-label: enabled
+        hosts:
+          - host: vault.example.com
+            paths:
+              - path: /
+                pathType: Prefix
+    asserts:
+      - equal:
+          path: metadata.annotations.test-annotation
+          value: enabled
+      - equal:
+          path: metadata.labels.test-label
+          value: enabled
+
+  - it: should render ingressClassName and tls when configured
+    set:
+      ingress:
+        enabled: true
+        className: nginx
+        hosts:
+          - host: vault.example.com
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - secretName: vaultwarden-tls
+            hosts:
+              - vault.example.com
+    asserts:
+      - equal:
+          path: spec.ingressClassName
+          value: nginx
+      - equal:
+          path: spec.tls[0].secretName
+          value: vaultwarden-tls
+      - equal:
+          path: spec.tls[0].hosts[0]
+          value: vault.example.com
+
+  - it: should route configured hosts to the vaultwarden service
+    set:
+      service:
+        port: 8080
+      ingress:
+        enabled: true
+        hosts:
+          - host: vault.example.com
+            paths:
+              - path: /
+                pathType: Prefix
+    asserts:
+      - contains:
+          path: spec.rules
+          content:
+            host: vault.example.com
+            http:
+              paths:
+                - path: /
+                  pathType: Prefix
+                  backend:
+                    service:
+                      name: vaultwarden
+                      port:
+                        number: 8080

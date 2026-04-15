@@ -1,0 +1,358 @@
+# -- Override the chart name.
+nameOverride: ""
+# -- Override the fully qualified release name.
+fullnameOverride: ""
+
+commonLabels: {}
+commonAnnotations: {}
+
+workload:
+  # -- Workload kind. Valid values: `Deployment` or `StatefulSet`.
+  kind: Deployment
+  # -- Number of Vaultwarden replicas. Keep `1` unless you explicitly accept the upstream multi-replica caveats.
+  replicaCount: 1
+  podAnnotations: {}
+  podLabels: {}
+  priorityClassName: ""
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  topologySpreadConstraints: []
+  resources: {}
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  maxUnavailable: ~
+
+image:
+  # -- Container image registry.
+  registry: docker.io
+  # -- Container image repository.
+  repository: vaultwarden/server
+  # -- Container image tag. Defaults to the chart appVersion when empty.
+  tag: ""
+  digest: ""
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+  automount: true
+
+podSecurityContext:
+  fsGroup: 1000
+  fsGroupChangePolicy: OnRootMismatch
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  privileged: false
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+service:
+  # -- Kubernetes Service type.
+  type: ClusterIP
+  # -- Service port exposed inside the cluster.
+  port: 80
+  # -- Target container port. Defaults to `config.rocket.port` when unset.
+  targetPort: null
+  annotations: {}
+  labels: {}
+
+ingress:
+  # -- Enable Ingress-based external access.
+  enabled: false
+  className: ""
+  annotations: {}
+  labels: {}
+  hosts: []
+  tls: []
+
+httpRoute:
+  # -- Enable Gateway API HTTPRoute-based external access.
+  enabled: false
+  parentRefs: []
+  hostnames: []
+  annotations: {}
+  labels: {}
+
+storage:
+  # -- Enable persistent storage for Vaultwarden data.
+  enabled: false
+  # -- Existing PVC to mount instead of creating one.
+  existingClaim: ""
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  # -- Persistent volume size when the chart manages storage.
+  size: 10Gi
+  annotations: {}
+  subPath: ""
+  dataPath: /data
+  attachmentsPath: /data/attachments
+  rsaKeyFilename: /data/rsa_key
+  iconCacheFolder: /data/icon_cache
+  sendsFolder: /data/sends
+  tmpFolder: /data/tmp
+  templatesFolder: /data/templates
+  reloadTemplates: false
+
+websocket:
+  # -- Enable Vaultwarden websocket notifications.
+  enabled: true
+
+jobs:
+  pollIntervalMs: ""
+  sendPurgeSchedule: ""
+  trashPurgeSchedule: ""
+  incomplete2faSchedule: ""
+  emergencyNotificationReminderSchedule: ""
+  emergencyRequestTimeoutSchedule: ""
+  eventCleanupSchedule: ""
+  authRequestPurgeSchedule: ""
+  duoContextPurgeSchedule: ""
+  purgeIncompleteSsoAuthSchedule: ""
+  eventsDaysRetain: ""
+
+config:
+  # -- Public Vaultwarden URL, including scheme and optional path.
+  domain: ""
+  # -- Base data folder used by Vaultwarden.
+  dataFolder: /data
+  # -- Folder containing the bundled web vault assets.
+  webVaultFolder: web-vault/
+  # -- Enable the built-in web vault UI.
+  webVaultEnabled: true
+  rocket:
+    # -- Rocket bind address.
+    address: 0.0.0.0
+    # -- Rocket bind port.
+    port: 8080
+    # -- Number of Rocket worker threads.
+    workers: 10
+  logLevel: ""
+  logFile: ""
+  iconService: internal
+  iconRedirectCode: "302"
+  signupsAllowed: true
+  signupsVerify: true
+  signupDomains: ""
+  invitationsAllowed: true
+  invitationOrgName: Vaultwarden
+  invitationExpirationHours: "120"
+  sendsAllowed: true
+  orgEventsEnabled: false
+  orgGroupsEnabled: false
+  showPassHint: false
+  emergencyAccessAllowed: true
+  emailChangeAllowed: true
+  loginRateLimitSeconds: "60"
+  loginRateLimitMaxBurst: "10"
+  requireDeviceEmail: false
+  adminRateLimitSeconds: "300"
+  adminRateLimitMaxBurst: "3"
+  adminSessionLifetime: "20"
+  disableAdminToken: false
+  trashAutoDeleteDays: ""
+  timeZone: ""
+
+database:
+  # Valid values: sqlite, postgresql, mysql
+  # -- Database backend used by Vaultwarden.
+  type: sqlite
+  # -- Number of startup retries while waiting for the database.
+  connectionRetries: 15
+  enableWal: true
+  timeout: ""
+  idleTimeout: ""
+  minConnections: ""
+  maxConnections: 10
+  connInit: ""
+  sqlite:
+    # -- SQLite database file path.
+    path: /data/db.sqlite3
+  external:
+    # -- External PostgreSQL/MySQL host used in non-sqlite modes.
+    host: ""
+    port: 5432
+    database: ""
+    existingSecret: ""
+    username:
+      value: ""
+      existingSecretKey: username
+    password:
+      value: ""
+      existingSecretKey: password
+    connectionString:
+      value: ""
+      existingSecretKey: url
+
+smtp:
+  # -- Enable SMTP-dependent features such as invitations and email 2FA.
+  enabled: false
+  existingSecret: ""
+  host: ""
+  port: 587
+  security: starttls
+  from: ""
+  fromName: ""
+  username:
+    value: ""
+    existingSecretKey: username
+  password:
+    value: ""
+    existingSecretKey: password
+  authMechanism: Plain
+  timeout: "15"
+  useSendmail: false
+  sendmailCommand: ""
+  heloName: ""
+  embedImages: true
+  acceptInvalidHostnames: false
+  acceptInvalidCerts: false
+  debug: false
+
+network:
+  ipHeader: X-Real-IP
+  allowedIframeAncestors: ""
+  allowedConnectSrc: ""
+  httpRequestBlockRegex: ""
+  httpRequestBlockNonGlobalIps: false
+  dnsPreferIpv6: false
+
+icons:
+  cacheTtl: ""
+  cacheNegTtl: ""
+  downloadTimeout: ""
+  disableDownload: false
+
+security:
+  hibp:
+    existingSecret: ""
+    apiKey:
+      value: ""
+      existingSecretKey: HIBP_API_KEY
+  passwordIterations: ""
+  passwordHintsAllowed: true
+  orgCreationUsers: ""
+  experimentalClientFeatureFlags: ""
+  increaseNoteSizeLimit: false
+  enforceSingleOrgWithResetPwPolicy: false
+
+mfa:
+  incomplete2faTimeLimit: ""
+  disable2faRemember: false
+  authenticatorDisableTimeDrift: false
+  yubico:
+    enabled: false
+    existingSecret: ""
+    clientId: ""
+    server: ""
+    secretKey:
+      value: ""
+      existingSecretKey: YUBICO_SECRET_KEY
+  duo:
+    enabled: false
+    existingSecret: ""
+    ikey: ""
+    host: ""
+    useIframe: false
+    sKey:
+      value: ""
+      existingSecretKey: DUO_SKEY
+  email2fa:
+    tokenSize: ""
+    expirationTime: ""
+    attemptsLimit: ""
+    enforceOnVerifiedInvite: false
+    autoFallback: false
+
+adminToken:
+  # Leave both value and existingSecret empty to allow later template work
+  # to generate and persist a token secret automatically.
+  value: ""
+  # -- Existing Secret containing the admin token.
+  existingSecret: ""
+  existingSecretKey: ADMIN_TOKEN
+
+pushNotifications:
+  enabled: false
+  existingSecret: ""
+  installationId:
+    value: ""
+    existingSecretKey: INSTALLATION_ID
+  installationKey:
+    value: ""
+    existingSecretKey: INSTALLATION_KEY
+  relayUri: https://push.bitwarden.com
+  identityUri: https://identity.bitwarden.com
+
+sso:
+  # -- Enable OpenID Connect SSO support.
+  enabled: false
+  existingSecret: ""
+  authority: ""
+  scopes: "email profile"
+  onlySSO: false
+  enforceSSO: false
+  signupsMatchEmail: true
+  ignoreEmailVerification: false
+  authorizeExtraParams: ""
+  pkce: true
+  trustedAudience: ""
+  masterPasswordPolicy: '{"enforceOnLogin":false,"minComplexity":3,"minLength":12,"requireLower":true,"requireNumbers":true,"requireSpecial":true,"requireUpper":true}'
+  disableSessionHandling: false
+  cacheExpiration: 0
+  debugTokens: false
+  clientId:
+    value: ""
+    existingSecretKey: SSO_CLIENT_ID
+  clientSecret:
+    value: ""
+    existingSecretKey: SSO_CLIENT_SECRET
+
+extraEnvVars: []
+extraEnvFrom:
+  configMaps: []
+  secrets: []
+extraVolumes: []
+extraVolumeMounts: []
+initContainers: []
+sidecars: []
+
+livenessProbe:
+  enabled: true
+  path: /alive
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  path: /alive
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
+
+startupProbe:
+  enabled: false
+  path: /alive
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 10

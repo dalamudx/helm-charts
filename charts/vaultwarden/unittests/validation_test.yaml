@@ -1,0 +1,57 @@
+suite: test vaultwarden validation
+
+templates:
+  - templates/configmap.yaml
+
+release:
+  name: vaultwarden
+  namespace: vaultwarden
+
+chart:
+  version: 1.0.0
+  appVersion: 1.0.0
+
+tests:
+  - it: should fail when ingress is enabled without hosts
+    set:
+      ingress:
+        enabled: true
+        hosts: []
+    asserts:
+      - failedTemplate:
+          errorMessage: ingress.hosts must contain at least one host when ingress.enabled=true
+
+  - it: should fail when ingress host is missing
+    set:
+      ingress:
+        enabled: true
+        hosts:
+          - host: ""
+            paths:
+              - path: /
+                pathType: Prefix
+    asserts:
+      - failedTemplate:
+          errorMessage: ingress.hosts[0].host is required when ingress.enabled=true
+
+  - it: should fail when httproute is enabled without parentRefs
+    set:
+      httpRoute:
+        enabled: true
+        parentRefs: []
+        hostnames:
+          - vault.example.com
+    asserts:
+      - failedTemplate:
+          errorMessage: httpRoute.parentRefs must contain at least one parent reference when httpRoute.enabled=true
+
+  - it: should fail when httproute is enabled without hostnames
+    set:
+      httpRoute:
+        enabled: true
+        parentRefs:
+          - name: edge
+        hostnames: []
+    asserts:
+      - failedTemplate:
+          errorMessage: httpRoute.hostnames must contain at least one hostname when httpRoute.enabled=true

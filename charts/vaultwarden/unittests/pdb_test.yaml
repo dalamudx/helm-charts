@@ -1,0 +1,49 @@
+suite: test vaultwarden pdb
+
+templates:
+  - templates/pdb.yaml
+
+release:
+  name: vaultwarden
+  namespace: vaultwarden
+
+chart:
+  version: 1.0.0
+  appVersion: 1.0.0
+
+tests:
+  - it: should not create pdb when disabled
+    set:
+      podDisruptionBudget:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create pdb with minAvailable when enabled
+    set:
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 1
+        maxUnavailable: null
+    asserts:
+      - equal:
+          path: kind
+          value: PodDisruptionBudget
+      - equal:
+          path: spec.minAvailable
+          value: 1
+      - equal:
+          path: spec.selector.matchLabels["app.kubernetes.io/component"]
+          value: vaultwarden
+
+  - it: should create pdb with maxUnavailable when minAvailable is empty
+    set:
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: null
+        maxUnavailable: 1
+    asserts:
+      - equal:
+          path: spec.maxUnavailable
+          value: 1

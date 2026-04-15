@@ -1,0 +1,222 @@
+{{- include "vaultwarden.validate" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "vaultwarden.configMapName" . }}
+  labels:
+    app.kubernetes.io/component: vaultwarden
+{{ include "vaultwarden.labels" . | nindent 4 }}
+data:
+  DOMAIN: {{ .Values.config.domain | quote }}
+  DATA_FOLDER: {{ .Values.config.dataFolder | quote }}
+  RSA_KEY_FILENAME: {{ .Values.storage.rsaKeyFilename | quote }}
+  ICON_CACHE_FOLDER: {{ .Values.storage.iconCacheFolder | quote }}
+  ATTACHMENTS_FOLDER: {{ .Values.storage.attachmentsPath | quote }}
+  SENDS_FOLDER: {{ .Values.storage.sendsFolder | quote }}
+  TMP_FOLDER: {{ .Values.storage.tmpFolder | quote }}
+  TEMPLATES_FOLDER: {{ .Values.storage.templatesFolder | quote }}
+  RELOAD_TEMPLATES: {{ .Values.storage.reloadTemplates | quote }}
+  WEB_VAULT_FOLDER: {{ .Values.config.webVaultFolder | quote }}
+  WEB_VAULT_ENABLED: {{ .Values.config.webVaultEnabled | quote }}
+  ENABLE_WEBSOCKET: {{ .Values.websocket.enabled | quote }}
+  ROCKET_ADDRESS: {{ .Values.config.rocket.address | quote }}
+  ROCKET_PORT: {{ .Values.config.rocket.port | quote }}
+  ROCKET_WORKERS: {{ .Values.config.rocket.workers | quote }}
+  SHOW_PASSWORD_HINT: {{ .Values.config.showPassHint | quote }}
+  SIGNUPS_ALLOWED: {{ .Values.config.signupsAllowed | quote }}
+  SIGNUPS_VERIFY: {{ .Values.config.signupsVerify | quote }}
+  INVITATIONS_ALLOWED: {{ .Values.config.invitationsAllowed | quote }}
+  INVITATION_ORG_NAME: {{ .Values.config.invitationOrgName | quote }}
+  INVITATION_EXPIRATION_HOURS: {{ .Values.config.invitationExpirationHours | quote }}
+  SENDS_ALLOWED: {{ .Values.config.sendsAllowed | quote }}
+  ORG_EVENTS_ENABLED: {{ .Values.config.orgEventsEnabled | quote }}
+  ORG_GROUPS_ENABLED: {{ .Values.config.orgGroupsEnabled | quote }}
+  EMERGENCY_ACCESS_ALLOWED: {{ .Values.config.emergencyAccessAllowed | quote }}
+  EMAIL_CHANGE_ALLOWED: {{ .Values.config.emailChangeAllowed | quote }}
+  DISABLE_2FA_REMEMBER: {{ .Values.mfa.disable2faRemember | quote }}
+  AUTHENTICATOR_DISABLE_TIME_DRIFT: {{ .Values.mfa.authenticatorDisableTimeDrift | quote }}
+  LOGIN_RATELIMIT_SECONDS: {{ .Values.config.loginRateLimitSeconds | quote }}
+  LOGIN_RATELIMIT_MAX_BURST: {{ .Values.config.loginRateLimitMaxBurst | quote }}
+  REQUIRE_DEVICE_EMAIL: {{ .Values.config.requireDeviceEmail | quote }}
+  ADMIN_RATELIMIT_SECONDS: {{ .Values.config.adminRateLimitSeconds | quote }}
+  ADMIN_RATELIMIT_MAX_BURST: {{ .Values.config.adminRateLimitMaxBurst | quote }}
+  ADMIN_SESSION_LIFETIME: {{ .Values.config.adminSessionLifetime | quote }}
+  DISABLE_ADMIN_TOKEN: {{ .Values.config.disableAdminToken | quote }}
+  PASSWORD_HINTS_ALLOWED: {{ .Values.security.passwordHintsAllowed | quote }}
+  INCREASE_NOTE_SIZE_LIMIT: {{ .Values.security.increaseNoteSizeLimit | quote }}
+  ENFORCE_SINGLE_ORG_WITH_RESET_PW_POLICY: {{ .Values.security.enforceSingleOrgWithResetPwPolicy | quote }}
+  ICON_SERVICE: {{ .Values.config.iconService | quote }}
+  ICON_REDIRECT_CODE: {{ .Values.config.iconRedirectCode | quote }}
+  DISABLE_ICON_DOWNLOAD: {{ .Values.icons.disableDownload | quote }}
+  IP_HEADER: {{ .Values.network.ipHeader | quote }}
+  HTTP_REQUEST_BLOCK_NON_GLOBAL_IPS: {{ .Values.network.httpRequestBlockNonGlobalIps | quote }}
+  DNS_PREFER_IPV6: {{ .Values.network.dnsPreferIpv6 | quote }}
+  DB_CONNECTION_RETRIES: {{ .Values.database.connectionRetries | quote }}
+  ENABLE_DB_WAL: {{ .Values.database.enableWal | quote }}
+  DATABASE_MAX_CONNS: {{ .Values.database.maxConnections | quote }}
+  {{- if eq (lower .Values.database.type) "sqlite" }}
+  DATABASE_URL: {{ .Values.database.sqlite.path | quote }}
+  {{- end }}
+  {{- if or (eq (toString .Values.jobs.pollIntervalMs) "0") .Values.jobs.pollIntervalMs }}
+  JOB_POLL_INTERVAL_MS: {{ .Values.jobs.pollIntervalMs | quote }}
+  {{- end }}
+  {{- with .Values.jobs.sendPurgeSchedule }}
+  SEND_PURGE_SCHEDULE: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.jobs.trashPurgeSchedule }}
+  TRASH_PURGE_SCHEDULE: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.jobs.incomplete2faSchedule }}
+  INCOMPLETE_2FA_SCHEDULE: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.jobs.emergencyNotificationReminderSchedule }}
+  EMERGENCY_NOTIFICATION_REMINDER_SCHEDULE: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.jobs.emergencyRequestTimeoutSchedule }}
+  EMERGENCY_REQUEST_TIMEOUT_SCHEDULE: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.jobs.eventCleanupSchedule }}
+  EVENT_CLEANUP_SCHEDULE: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.jobs.authRequestPurgeSchedule }}
+  AUTH_REQUEST_PURGE_SCHEDULE: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.jobs.duoContextPurgeSchedule }}
+  DUO_CONTEXT_PURGE_SCHEDULE: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.jobs.purgeIncompleteSsoAuthSchedule }}
+  PURGE_INCOMPLETE_SSO_AUTH: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.jobs.eventsDaysRetain }}
+  EVENTS_DAYS_RETAIN: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.mfa.incomplete2faTimeLimit }}
+  INCOMPLETE_2FA_TIME_LIMIT: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.config.signupDomains }}
+  SIGNUPS_DOMAINS_WHITELIST: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.config.logLevel }}
+  LOG_LEVEL: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.config.logFile }}
+  LOG_FILE: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.config.trashAutoDeleteDays }}
+  TRASH_AUTO_DELETE_DAYS: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.security.passwordIterations }}
+  PASSWORD_ITERATIONS: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.security.orgCreationUsers }}
+  ORG_CREATION_USERS: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.security.experimentalClientFeatureFlags }}
+  EXPERIMENTAL_CLIENT_FEATURE_FLAGS: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.database.timeout }}
+  DATABASE_TIMEOUT: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.database.idleTimeout }}
+  DATABASE_IDLE_TIMEOUT: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.database.minConnections }}
+  DATABASE_MIN_CONNS: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.database.connInit }}
+  DATABASE_CONN_INIT: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.network.allowedIframeAncestors }}
+  ALLOWED_IFRAME_ANCESTORS: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.network.allowedConnectSrc }}
+  ALLOWED_CONNECT_SRC: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.network.httpRequestBlockRegex }}
+  HTTP_REQUEST_BLOCK_REGEX: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.icons.cacheTtl }}
+  ICON_CACHE_TTL: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.icons.cacheNegTtl }}
+  ICON_CACHE_NEGTTL: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.icons.downloadTimeout }}
+  ICON_DOWNLOAD_TIMEOUT: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.config.timeZone }}
+  TZ: {{ . | quote }}
+  {{- end }}
+  {{- if .Values.mfa.yubico.enabled }}
+  YUBICO_CLIENT_ID: {{ .Values.mfa.yubico.clientId | quote }}
+  {{- with .Values.mfa.yubico.server }}
+  YUBICO_SERVER: {{ . | quote }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.mfa.duo.enabled }}
+  DUO_IKEY: {{ .Values.mfa.duo.ikey | quote }}
+  DUO_HOST: {{ .Values.mfa.duo.host | quote }}
+  DUO_USE_IFRAME: {{ .Values.mfa.duo.useIframe | quote }}
+  {{- end }}
+  {{- with .Values.mfa.email2fa.tokenSize }}
+  EMAIL_TOKEN_SIZE: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.mfa.email2fa.expirationTime }}
+  EMAIL_EXPIRATION_TIME: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.mfa.email2fa.attemptsLimit }}
+  EMAIL_ATTEMPTS_LIMIT: {{ . | quote }}
+  {{- end }}
+  EMAIL_2FA_ENFORCE_ON_VERIFIED_INVITE: {{ .Values.mfa.email2fa.enforceOnVerifiedInvite | quote }}
+  EMAIL_2FA_AUTO_FALLBACK: {{ .Values.mfa.email2fa.autoFallback | quote }}
+  {{- if .Values.smtp.enabled }}
+  SMTP_HOST: {{ .Values.smtp.host | quote }}
+  SMTP_PORT: {{ .Values.smtp.port | quote }}
+  SMTP_SECURITY: {{ .Values.smtp.security | quote }}
+  SMTP_FROM: {{ .Values.smtp.from | quote }}
+  SMTP_AUTH_MECHANISM: {{ .Values.smtp.authMechanism | quote }}
+  SMTP_TIMEOUT: {{ .Values.smtp.timeout | quote }}
+  USE_SENDMAIL: {{ .Values.smtp.useSendmail | quote }}
+  SMTP_EMBED_IMAGES: {{ .Values.smtp.embedImages | quote }}
+  SMTP_ACCEPT_INVALID_HOSTNAMES: {{ .Values.smtp.acceptInvalidHostnames | quote }}
+  SMTP_ACCEPT_INVALID_CERTS: {{ .Values.smtp.acceptInvalidCerts | quote }}
+  SMTP_DEBUG: {{ .Values.smtp.debug | quote }}
+  {{- with .Values.smtp.fromName }}
+  SMTP_FROM_NAME: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.smtp.sendmailCommand }}
+  SENDMAIL_COMMAND: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.smtp.heloName }}
+  HELO_NAME: {{ . | quote }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.pushNotifications.enabled }}
+  PUSH_ENABLED: "true"
+  PUSH_RELAY_URI: {{ .Values.pushNotifications.relayUri | quote }}
+  PUSH_IDENTITY_URI: {{ .Values.pushNotifications.identityUri | quote }}
+  {{- end }}
+  {{- if .Values.sso.enabled }}
+  SSO_ENABLED: {{ .Values.sso.enabled | quote }}
+  SSO_ONLY: {{ .Values.sso.onlySSO | quote }}
+  SSO_AUTHORITY: {{ .Values.sso.authority | quote }}
+  SSO_SCOPES: {{ .Values.sso.scopes | quote }}
+  SSO_SIGNUPS_MATCH_EMAIL: {{ .Values.sso.signupsMatchEmail | quote }}
+  SSO_ALLOW_UNKNOWN_EMAIL_VERIFICATION: {{ .Values.sso.ignoreEmailVerification | quote }}
+  SSO_PKCE: {{ .Values.sso.pkce | quote }}
+  SSO_AUTH_ONLY_NOT_SESSION: {{ .Values.sso.disableSessionHandling | quote }}
+  SSO_CLIENT_CACHE_EXPIRATION: {{ .Values.sso.cacheExpiration | quote }}
+  SSO_DEBUG_TOKENS: {{ .Values.sso.debugTokens | quote }}
+  {{- with .Values.sso.authorizeExtraParams }}
+  SSO_AUTHORIZE_EXTRA_PARAMS: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.sso.trustedAudience }}
+  SSO_AUDIENCE_TRUSTED: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.sso.masterPasswordPolicy }}
+  SSO_MASTER_PASSWORD_POLICY: {{ . | quote }}
+  {{- end }}
+  {{- if .Values.sso.enforceSSO }}
+  SSO_FRONTEND: "override"
+  {{- end }}
+  {{- end }}

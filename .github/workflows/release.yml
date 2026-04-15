@@ -104,21 +104,36 @@ jobs:
 
       - name: Validate charts
         run: |
-          for chart in affine n8n; do
+          shopt -s nullglob
+
+          chart_manifests=(charts/*/Chart.yaml)
+          if [[ ${#chart_manifests[@]} -eq 0 ]]; then
+            printf 'No charts found under charts/*\n' >&2
+            exit 1
+          fi
+
+          for chart_manifest in "${chart_manifests[@]}"; do
+            chart_dir=${chart_manifest%/Chart.yaml}
+            chart=$(basename "$chart_dir")
+
             helm_values_args=()
             unittest_values_args=()
 
-            if [[ "$chart" == "affine" ]]; then
-              values_file="/tmp/${chart}-validation-values.yaml"
-              printf 'app:\n  externalUrl: https://affine.example.com\n' > "$values_file"
-              helm_values_args=(-f "$values_file")
-              unittest_values_args=(-v "$values_file")
-            fi
+            case "$chart" in
+              affine)
+                values_file="${RUNNER_TEMP}/${chart}-validation-values.yaml"
+                printf 'app:\n  externalUrl: https://affine.example.com\n' > "$values_file"
+                helm_values_args=(-f "$values_file")
+                unittest_values_args=(-v "$values_file")
+                ;;
+            esac
 
-            helm lint "charts/$chart" --strict "${helm_values_args[@]}"
-            helm-unittest -f 'unittests/*_test.yaml' --strict "${unittest_values_args[@]}" "charts/$chart"
-            helm template "$chart" "charts/$chart" "${helm_values_args[@]}" --debug > "/tmp/${chart}-rendered.yaml"
+            helm lint "$chart_dir" --strict "${helm_values_args[@]}"
+            helm-unittest -f 'unittests/*_test.yaml' --strict "${unittest_values_args[@]}" "$chart_dir"
+            helm template "$chart" "$chart_dir" "${helm_values_args[@]}" --debug > "${RUNNER_TEMP}/${chart}-rendered.yaml"
           done
+
+          shopt -u nullglob
 
       - name: Import Helm signing key
         env:

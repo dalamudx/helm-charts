@@ -1,0 +1,309 @@
+suite: test vaultwarden configmap runtime envs
+
+templates:
+  - templates/configmap.yaml
+
+release:
+  name: vaultwarden
+  namespace: vaultwarden
+
+chart:
+  version: 1.0.0
+  appVersion: 1.0.0
+
+tests:
+  - it: should render first-batch defaults in the configmap
+    asserts:
+      - equal:
+          path: data.ENABLE_WEBSOCKET
+          value: "true"
+      - equal:
+          path: data.LOGIN_RATELIMIT_SECONDS
+          value: "60"
+      - equal:
+          path: data.LOGIN_RATELIMIT_MAX_BURST
+          value: "10"
+      - equal:
+          path: data.ADMIN_SESSION_LIFETIME
+          value: "20"
+      - equal:
+          path: data.DISABLE_ADMIN_TOKEN
+          value: "false"
+      - equal:
+          path: data.DISABLE_2FA_REMEMBER
+          value: "false"
+      - equal:
+          path: data.AUTHENTICATOR_DISABLE_TIME_DRIFT
+          value: "false"
+      - equal:
+          path: data.PASSWORD_HINTS_ALLOWED
+          value: "true"
+      - equal:
+          path: data.INCREASE_NOTE_SIZE_LIMIT
+          value: "false"
+      - equal:
+          path: data.ENFORCE_SINGLE_ORG_WITH_RESET_PW_POLICY
+          value: "false"
+      - equal:
+          path: data.ENABLE_DB_WAL
+          value: "true"
+      - equal:
+          path: data.RSA_KEY_FILENAME
+          value: "/data/rsa_key"
+      - equal:
+          path: data.ICON_CACHE_FOLDER
+          value: "/data/icon_cache"
+      - equal:
+          path: data.ATTACHMENTS_FOLDER
+          value: "/data/attachments"
+      - equal:
+          path: data.SENDS_FOLDER
+          value: "/data/sends"
+      - equal:
+          path: data.TMP_FOLDER
+          value: "/data/tmp"
+      - equal:
+          path: data.TEMPLATES_FOLDER
+          value: "/data/templates"
+      - equal:
+          path: data.RELOAD_TEMPLATES
+          value: "false"
+      - equal:
+          path: data.WEB_VAULT_FOLDER
+          value: "web-vault/"
+      - equal:
+          path: data.IP_HEADER
+          value: "X-Real-IP"
+      - equal:
+          path: data.HTTP_REQUEST_BLOCK_NON_GLOBAL_IPS
+          value: "false"
+      - equal:
+          path: data.DNS_PREFER_IPV6
+          value: "false"
+      - notExists:
+          path: data.SEND_PURGE_SCHEDULE
+      - notExists:
+          path: data.DATABASE_TIMEOUT
+      - notExists:
+          path: data.ALLOWED_CONNECT_SRC
+      - notExists:
+          path: data.HIBP_API_KEY
+      - notExists:
+          path: data.ICON_CACHE_TTL
+
+  - it: should render configured first-batch job database smtp and network envs
+    set:
+      jobs:
+        pollIntervalMs: "0"
+        sendPurgeSchedule: "0 5 * * * *"
+        eventCleanupSchedule: "0 10 0 * * *"
+        eventsDaysRetain: "30"
+      database:
+        timeout: "45"
+        idleTimeout: "900"
+        minConnections: "4"
+        connInit: "PRAGMA busy_timeout = 7000;"
+      smtp:
+        enabled: true
+        host: smtp.example.com
+        from: vaultwarden@example.com
+        timeout: "20"
+        useSendmail: true
+        sendmailCommand: /usr/sbin/sendmail
+        heloName: mail.example.com
+        embedImages: false
+      network:
+        allowedIframeAncestors: https://vault.example.com
+        allowedConnectSrc: https://api.example.com https://events.example.com
+        httpRequestBlockRegex: ^(10\\.0\\.0\\.[0-9]+)$
+        httpRequestBlockNonGlobalIps: true
+        dnsPreferIpv6: true
+      security:
+        passwordIterations: "700000"
+        passwordHintsAllowed: false
+        orgCreationUsers: admin1@example.com,admin2@example.com
+        experimentalClientFeatureFlags: ssh-agent,ssh-key-vault-item
+        increaseNoteSizeLimit: true
+        enforceSingleOrgWithResetPwPolicy: true
+      mfa:
+        incomplete2faTimeLimit: "5"
+        disable2faRemember: true
+        authenticatorDisableTimeDrift: true
+        yubico:
+          enabled: true
+          clientId: "11111"
+          server: https://yubi.example.com/wsapi/2.0/verify
+        duo:
+          enabled: true
+          ikey: duo-ikey
+          host: api-123.duosecurity.com
+          useIframe: true
+        email2fa:
+          tokenSize: "8"
+          expirationTime: "900"
+          attemptsLimit: "5"
+          enforceOnVerifiedInvite: true
+          autoFallback: true
+      storage:
+        rsaKeyFilename: /vault/rsa_key
+        iconCacheFolder: /vault/icon_cache
+        attachmentsPath: /vault/attachments
+        sendsFolder: /vault/sends
+        tmpFolder: /scratch/tmp
+        templatesFolder: /scratch/templates
+        reloadTemplates: true
+      icons:
+        cacheTtl: "2592000"
+        cacheNegTtl: "259200"
+        downloadTimeout: "10"
+        disableDownload: true
+      config:
+        webVaultFolder: /vault/web-vault/
+    asserts:
+      - equal:
+          path: data.JOB_POLL_INTERVAL_MS
+          value: "0"
+      - equal:
+          path: data.SEND_PURGE_SCHEDULE
+          value: "0 5 * * * *"
+      - equal:
+          path: data.EVENT_CLEANUP_SCHEDULE
+          value: "0 10 0 * * *"
+      - equal:
+          path: data.EVENTS_DAYS_RETAIN
+          value: "30"
+      - equal:
+          path: data.DATABASE_TIMEOUT
+          value: "45"
+      - equal:
+          path: data.DATABASE_IDLE_TIMEOUT
+          value: "900"
+      - equal:
+          path: data.DATABASE_MIN_CONNS
+          value: "4"
+      - equal:
+          path: data.DATABASE_CONN_INIT
+          value: "PRAGMA busy_timeout = 7000;"
+      - equal:
+          path: data.INCOMPLETE_2FA_TIME_LIMIT
+          value: "5"
+      - equal:
+          path: data.DISABLE_2FA_REMEMBER
+          value: "true"
+      - equal:
+          path: data.AUTHENTICATOR_DISABLE_TIME_DRIFT
+          value: "true"
+      - equal:
+          path: data.PASSWORD_ITERATIONS
+          value: "700000"
+      - equal:
+          path: data.PASSWORD_HINTS_ALLOWED
+          value: "false"
+      - equal:
+          path: data.ORG_CREATION_USERS
+          value: "admin1@example.com,admin2@example.com"
+      - equal:
+          path: data.EXPERIMENTAL_CLIENT_FEATURE_FLAGS
+          value: "ssh-agent,ssh-key-vault-item"
+      - equal:
+          path: data.INCREASE_NOTE_SIZE_LIMIT
+          value: "true"
+      - equal:
+          path: data.ENFORCE_SINGLE_ORG_WITH_RESET_PW_POLICY
+          value: "true"
+      - equal:
+          path: data.YUBICO_CLIENT_ID
+          value: "11111"
+      - equal:
+          path: data.YUBICO_SERVER
+          value: "https://yubi.example.com/wsapi/2.0/verify"
+      - equal:
+          path: data.DUO_IKEY
+          value: "duo-ikey"
+      - equal:
+          path: data.DUO_HOST
+          value: "api-123.duosecurity.com"
+      - equal:
+          path: data.DUO_USE_IFRAME
+          value: "true"
+      - equal:
+          path: data.EMAIL_TOKEN_SIZE
+          value: "8"
+      - equal:
+          path: data.EMAIL_EXPIRATION_TIME
+          value: "900"
+      - equal:
+          path: data.EMAIL_ATTEMPTS_LIMIT
+          value: "5"
+      - equal:
+          path: data.EMAIL_2FA_ENFORCE_ON_VERIFIED_INVITE
+          value: "true"
+      - equal:
+          path: data.EMAIL_2FA_AUTO_FALLBACK
+          value: "true"
+      - equal:
+          path: data.RSA_KEY_FILENAME
+          value: "/vault/rsa_key"
+      - equal:
+          path: data.ICON_CACHE_FOLDER
+          value: "/vault/icon_cache"
+      - equal:
+          path: data.ATTACHMENTS_FOLDER
+          value: "/vault/attachments"
+      - equal:
+          path: data.SENDS_FOLDER
+          value: "/vault/sends"
+      - equal:
+          path: data.TMP_FOLDER
+          value: "/scratch/tmp"
+      - equal:
+          path: data.TEMPLATES_FOLDER
+          value: "/scratch/templates"
+      - equal:
+          path: data.RELOAD_TEMPLATES
+          value: "true"
+      - equal:
+          path: data.WEB_VAULT_FOLDER
+          value: "/vault/web-vault/"
+      - equal:
+          path: data.ICON_CACHE_TTL
+          value: "2592000"
+      - equal:
+          path: data.ICON_CACHE_NEGTTL
+          value: "259200"
+      - equal:
+          path: data.ICON_DOWNLOAD_TIMEOUT
+          value: "10"
+      - equal:
+          path: data.DISABLE_ICON_DOWNLOAD
+          value: "true"
+      - equal:
+          path: data.SMTP_TIMEOUT
+          value: "20"
+      - equal:
+          path: data.USE_SENDMAIL
+          value: "true"
+      - equal:
+          path: data.SENDMAIL_COMMAND
+          value: "/usr/sbin/sendmail"
+      - equal:
+          path: data.HELO_NAME
+          value: "mail.example.com"
+      - equal:
+          path: data.SMTP_EMBED_IMAGES
+          value: "false"
+      - equal:
+          path: data.ALLOWED_IFRAME_ANCESTORS
+          value: "https://vault.example.com"
+      - equal:
+          path: data.ALLOWED_CONNECT_SRC
+          value: "https://api.example.com https://events.example.com"
+      - equal:
+          path: data.HTTP_REQUEST_BLOCK_REGEX
+          value: "^(10\\\\.0\\\\.0\\\\.[0-9]+)$"
+      - equal:
+          path: data.HTTP_REQUEST_BLOCK_NON_GLOBAL_IPS
+          value: "true"
+      - equal:
+          path: data.DNS_PREFER_IPV6
+          value: "true"

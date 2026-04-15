@@ -1,0 +1,99 @@
+suite: test vaultwarden deployment env precedence
+
+templates:
+  - templates/deployment.yaml
+  - templates/secret.yaml
+
+release:
+  name: vaultwarden
+  namespace: vaultwarden
+
+chart:
+  version: 1.0.0
+  appVersion: 1.0.0
+
+tests:
+  - it: should inject ADMIN_TOKEN from the managed secret by default
+    template: templates/deployment.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ADMIN_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: vaultwarden-admin-token
+                key: ADMIN_TOKEN
+
+  - it: should let disableAdminToken take precedence over admin token secret wiring
+    set:
+      config:
+        disableAdminToken: true
+      adminToken:
+        existingSecret: external-admin-token
+        existingSecretKey: ADMIN_TOKEN
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: vaultwarden
+        template: templates/deployment.yaml
+      - notExists:
+          path: spec.template.spec.containers[0].env
+        template: templates/deployment.yaml
+      - hasDocuments:
+          count: 0
+        template: templates/secret.yaml
+
+  - it: should wire advanced secret-backed env vars for hibp yubico and duo
+    set:
+      config:
+        disableAdminToken: true
+      security:
+        hibp:
+          apiKey:
+            value: super-secret-hibp-key
+      mfa:
+        yubico:
+          enabled: true
+          clientId: "11111"
+          secretKey:
+            value: yubico-secret-key
+        duo:
+          enabled: true
+          ikey: duo-ikey
+          host: api-123.duosecurity.com
+          sKey:
+            value: duo-secret-key
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: HIBP_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: vaultwarden-hibp
+                key: HIBP_API_KEY
+        template: templates/deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: YUBICO_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: vaultwarden-yubico
+                key: YUBICO_SECRET_KEY
+        template: templates/deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DUO_SKEY
+            valueFrom:
+              secretKeyRef:
+                name: vaultwarden-duo
+                key: DUO_SKEY
+        template: templates/deployment.yaml
+      - hasDocuments:
+          count: 3
+        template: templates/secret.yaml

@@ -1,0 +1,30 @@
+{{- if eq (include "vaultwarden.workloadType" .) "Deployment" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "vaultwarden.fullname" . }}
+  labels:
+    {{- include "vaultwarden.labels" . | nindent 4 }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.workload.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "vaultwarden.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "vaultwarden.matchLabels" . | nindent 8 }}
+        {{- with .Values.workload.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.workload.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- include "vaultwarden.podSpec" . | nindent 6 }}
+{{- end }}

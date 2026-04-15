@@ -1,0 +1,53 @@
+suite: test vaultwarden service
+
+templates:
+  - templates/service.yaml
+
+release:
+  name: vaultwarden
+  namespace: vaultwarden
+
+chart:
+  version: 1.0.0
+  appVersion: 1.0.0
+
+tests:
+  - it: should use configured service port and default targetPort from config.rocket.port
+    set:
+      service:
+        port: 80
+        targetPort: null
+      config:
+        rocket:
+          port: 8080
+    asserts:
+      - equal:
+          path: spec.ports[0].port
+          value: 80
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 8080
+
+  - it: should allow explicit service targetPort override
+    set:
+      config:
+        rocket:
+          port: 9090
+      service:
+        targetPort: 8080
+    asserts:
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 8080
+
+  - it: should select vaultwarden workload labels
+    asserts:
+      - equal:
+          path: spec.selector["app.kubernetes.io/component"]
+          value: vaultwarden
+      - equal:
+          path: spec.selector["app.kubernetes.io/name"]
+          value: vaultwarden
+      - equal:
+          path: spec.selector["app.kubernetes.io/instance"]
+          value: vaultwarden
