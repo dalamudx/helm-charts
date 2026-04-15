@@ -254,6 +254,12 @@
                             <td style="padding: 0.9rem 0;"><img alt="App 2.16.1" src="https://img.shields.io/badge/App-2.16.1-informational?style=flat-square"></td>
                         </tr>
 
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 0.9rem 0;">vaultwarden</td>
+                            <td style="padding: 0.9rem 0;"><img alt="Chart 1.0.0" src="https://img.shields.io/badge/Chart-1.0.0-informational?style=flat-square"></td>
+                            <td style="padding: 0.9rem 0;"><img alt="App 1.35.5" src="https://img.shields.io/badge/App-1.35.5-informational?style=flat-square"></td>
+                        </tr>
+
                     </tbody>
                 </table>
             </div>
@@ -297,6 +303,15 @@ helm repo update</code>
                 <p style="color: var(--text-muted); margin-bottom: 0.75rem; font-size: 0.95rem;">Helm chart for n8n - A workflow automation platform that gives technical teams the flexibility of code with the speed of no-code.</p>
                 <div class="code-block">
                     <code class="code-content">helm install n8n dev-charts/n8n --create-namespace --namespace n8n</code>
+                    <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-title">vaultwarden</div>
+                <p style="color: var(--text-muted); margin-bottom: 0.75rem; font-size: 0.95rem;">Helm chart for Vaultwarden - an unofficial Bitwarden-compatible server written in Rust.</p>
+                <div class="code-block">
+                    <code class="code-content">helm install vaultwarden dev-charts/vaultwarden --create-namespace --namespace vaultwarden</code>
                     <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
                 </div>
             </div>
