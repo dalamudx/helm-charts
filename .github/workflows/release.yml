@@ -179,6 +179,7 @@ jobs:
 
 
       - name: Run chart-releaser
+        id: chart_releaser
         uses: helm/chart-releaser-action@v1.7.0
         with:
           config: .cr.yaml
@@ -186,6 +187,75 @@ jobs:
           skip_existing: true
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Update release notes
+        if: steps.chart_releaser.outputs.changed_charts != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_API_URL: ${{ github.api_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          CHANGED_CHARTS: ${{ steps.chart_releaser.outputs.changed_charts }}
+        run: |
+          while IFS= read -r chart; do
+            [[ -n "$chart" ]] || continue
+
+            if [[ -f "${chart}/Chart.yaml" ]]; then
+              chart_dir="${chart}"
+            else
+              chart_dir="charts/${chart}"
+            fi
+
+            chart_file="${chart_dir}/Chart.yaml"
+            if [[ ! -f "$chart_file" ]]; then
+              printf 'Chart metadata not found for changed chart: %s\n' "$chart" >&2
+              exit 1
+            fi
+
+            name=$(yq -r '.name' "$chart_file")
+            version=$(yq -r '.version' "$chart_file")
+            app_version=$(yq -r '.appVersion // ""' "$chart_file")
+            description=$(yq -r '.description // ""' "$chart_file")
+
+            if [[ -z "$name" || -z "$version" || "$name" == "null" || "$version" == "null" ]]; then
+              printf 'Invalid chart metadata in %s\n' "$chart_file" >&2
+              exit 1
+            fi
+
+            tag="${name}-${version}"
+            notes_file="${RUNNER_TEMP}/${name}-release-notes.md"
+            release_json="${RUNNER_TEMP}/${name}-release.json"
+            release_body_json="${RUNNER_TEMP}/${name}-release-body.json"
+
+            printf '%s\n' \
+              '## Chart Information' \
+              '' \
+              "$description" \
+              '' \
+              "- Chart: ${name}" \
+              "- Chart Version: ${version}" \
+              "- App Version: ${app_version}" \
+              '' > "$notes_file"
+            curl -fsSL \
+              -H "Authorization: token ${GITHUB_TOKEN}" \
+              -H "Accept: application/json" \
+              "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/tags/${tag}" \
+              -o "$release_json"
+
+            release_id=$(jq -r '.id' "$release_json")
+            if [[ -z "$release_id" || "$release_id" == "null" ]]; then
+              printf 'Release id not found for tag: %s\n' "$tag" >&2
+              exit 1
+            fi
+
+            jq -Rs '{body: .}' "$notes_file" > "$release_body_json"
+
+            curl -fsSL -X PATCH \
+              -H "Authorization: token ${GITHUB_TOKEN}" \
+              -H "Accept: application/json" \
+              -H "Content-Type: application/json" \
+              "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/${release_id}" \
+              --data @"$release_body_json" >/dev/null
+          done < <(jq -rn --arg charts "$CHANGED_CHARTS" '$charts | split(",")[] | gsub("^\\s+|\\s+$"; "") | select(length > 0)')
 
       - name: Update index.html on pages branch
         env:
