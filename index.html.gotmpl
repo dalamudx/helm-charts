@@ -281,7 +281,7 @@ helm repo update</code>
                 <div class="step-title">{{ .name }}</div>
                 <p style="color: var(--text-muted); margin-bottom: 0.75rem; font-size: 0.95rem;">{{ .description }}</p>
                 <div class="code-block">
-                    <code class="code-content">helm install {{ .name }} dev-charts/{{ .name }} --create-namespace --namespace {{ .name }}</code>
+                    <code class="code-content">helm install {{ .name }} dev-charts/{{ .name }} --create-namespace --namespace {{ .name }} -f your-values.yaml</code>
                     <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
                 </div>
             </div>
