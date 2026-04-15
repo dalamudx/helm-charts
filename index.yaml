@@ -899,4 +899,26 @@ entries:
     urls:
     - https://github.com/dalamudx/helm-charts/releases/download/n8n-1.0.1/n8n-1.0.1.tgz
     version: 1.0.1
-generated: "2026-04-15T10:41:46.404190898Z"
+  vaultwarden:
+  - apiVersion: v2
+    appVersion: 1.35.5
+    created: "2026-04-15T13:16:22.174360921Z"
+    description: Helm chart for Vaultwarden - an unofficial Bitwarden-compatible server
+      written in Rust.
+    digest: 84167d0a247b8f2089f593f3832e7dc48aa7f150031bb2e7b8b61631bf82655d
+    home: https://github.com/dani-garcia/vaultwarden
+    icon: https://github.com/dani-garcia/vaultwarden/blob/main/resources/vaultwarden-icon.svg
+    keywords:
+    - vaultwarden
+    - bitwarden
+    - password-manager
+    kubeVersion: '>=1.24.0-0'
+    name: vaultwarden
+    sources:
+    - https://github.com/dani-garcia/vaultwarden
+    - https://github.com/dalamudx/helm-charts
+    type: application
+    urls:
+    - https://github.com/dalamudx/helm-charts/releases/download/vaultwarden-1.0.0/vaultwarden-1.0.0.tgz
+    version: 1.0.0
+generated: "2026-04-15T13:16:22.174427018Z"
