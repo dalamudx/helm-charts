@@ -3,8 +3,8 @@ name: vaultwarden
 description: Helm chart for Vaultwarden - an unofficial Bitwarden-compatible server written in Rust.
 icon: https://raw.githubusercontent.com/dani-garcia/vaultwarden/refs/heads/main/resources/vaultwarden-icon.svg
 type: application
-version: 1.0.2
-appVersion: "1.35.6"
+version: 1.0.3
+appVersion: "1.35.7"
 kubeVersion: ">=1.24.0-0"
 home: https://github.com/dani-garcia/vaultwarden
 sources:
