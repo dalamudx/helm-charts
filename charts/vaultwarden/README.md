@@ -10,7 +10,7 @@ This chart bootstraps a [Vaultwarden](https://github.com/dani-garcia/vaultwarden
 
 | Field | Value |
 |-------|-------|
-| Version | ![Chart](https://img.shields.io/badge/Chart-1.0.0-informational?style=flat-square) ![App](https://img.shields.io/badge/App-1.35.5-informational?style=flat-square) |
+| Version | ![Chart](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fgithub.com%2Fdalamudx%2Fhelm-charts%2Fraw%2Frefs%2Fheads%2Fmain%2Fcharts%2Fvaultwarden%2FChart.yaml&query=%24.version&style=flat-square&label=Chart) ![App](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fgithub.com%2Fdalamudx%2Fhelm-charts%2Fraw%2Frefs%2Fheads%2Fmain%2Fcharts%2Fvaultwarden%2FChart.yaml&query=%24.appVersion&style=flat-square&label=App) |
 | Source | <a href="https://github.com/dani-garcia/vaultwarden">https://github.com/dani-garcia/vaultwarden</a><br><a href="https://github.com/dalamudx/helm-charts">https://github.com/dalamudx/helm-charts</a> |
 
 ## Prerequisites
