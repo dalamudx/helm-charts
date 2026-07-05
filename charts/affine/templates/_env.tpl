@@ -43,7 +43,7 @@ Environment variables for AFFiNE
   value: {{ include "affine.redis.port" . | quote }}
 - name: REDIS_SERVER_DATABASE
   value: {{ .Values.db.redis.database | quote }}
-- name: REDIS_SERVER_USER
+- name: REDIS_SERVER_USERNAME
   value: {{ .Values.db.redis.username | default "" | quote }}
 - name: REDIS_SERVER_PASSWORD
   {{- if or .Values.db.redis.existingSecret .Values.db.redis.password }}

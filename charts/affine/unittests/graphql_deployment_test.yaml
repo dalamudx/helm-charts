@@ -320,6 +320,19 @@ tests:
             value: "6379"
         template: graphql/deployment.yaml
 
+  - it: should set REDIS_SERVER_USERNAME when db.redis.username is set
+    set:
+      db:
+        redis:
+          username: admin
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: REDIS_SERVER_USERNAME
+            value: admin
+        template: graphql/deployment.yaml
+
   # --- Encryption private key secret ref ---------------------------
   - it: should read AFFINE_PRIVATE_KEY from affine-private-key secret by default
     asserts:

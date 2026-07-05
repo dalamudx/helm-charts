@@ -17,11 +17,11 @@ tests:
       - hasDocuments:
           count: 1
 
-  - it: should use pre-install and pre-upgrade hooks by default
+  - it: should use post-install and pre-upgrade hooks by default
     asserts:
       - equal:
           path: metadata.annotations["helm.sh/hook"]
-          value: pre-install,pre-upgrade
+          value: post-install,pre-upgrade
 
   - it: should keep the configured hook weight by default
     asserts:
