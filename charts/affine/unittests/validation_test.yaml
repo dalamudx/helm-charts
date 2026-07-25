@@ -2,6 +2,7 @@ suite: test validation failures
 
 templates:
   - front/deployment.yaml
+  - config-secret.yaml
 
 release:
   name: affine
@@ -19,6 +20,7 @@ tests:
     asserts:
       - failedTemplate:
           errorPattern: "app.externalUrl"
+        template: front/deployment.yaml
 
   - it: should fail when indexer is enabled without an endpoint
     set:
@@ -31,6 +33,7 @@ tests:
     asserts:
       - failedTemplate:
           errorPattern: "db.indexer.endpoint is required"
+        template: front/deployment.yaml
 
   - it: should fail when front ingress is enabled without hosts
     set:
@@ -43,6 +46,7 @@ tests:
     asserts:
       - failedTemplate:
           errorPattern: "front.ingress.hosts"
+        template: front/deployment.yaml
 
   - it: should fail when front HTTPRoute is enabled without parentRefs
     set:
@@ -57,6 +61,7 @@ tests:
     asserts:
       - failedTemplate:
           errorPattern: "front.httpRoute.parentRefs"
+        template: front/deployment.yaml
 
   - it: should fail when front HTTPRoute is enabled without hostnames
     set:
@@ -71,6 +76,7 @@ tests:
     asserts:
       - failedTemplate:
           errorPattern: "front.httpRoute.hostnames"
+        template: front/deployment.yaml
 
   - it: should render successfully when required validation inputs are satisfied
     set:
