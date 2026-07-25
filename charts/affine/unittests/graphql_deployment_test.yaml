@@ -2,6 +2,7 @@ suite: test graphql deployment
 
 templates:
   - graphql/deployment.yaml
+  - config-secret.yaml
   - encryption-secret.yaml
   - database-secret.yaml
 
@@ -487,15 +488,38 @@ tests:
         template: graphql/deployment.yaml
 
   # --- Pod annotations / labels ------------------------------------
-  - it: should apply pod annotations when graphql.podAnnotations is set
+  - it: should retain custom pod annotations and use a config checksum
     set:
       graphql:
         podAnnotations:
           prometheus.io/scrape: "true"
+          checksum/config-secret: user-supplied-value
     asserts:
       - equal:
           path: spec.template.metadata.annotations["prometheus.io/scrape"]
           value: "true"
+        template: graphql/deployment.yaml
+      - matchRegex:
+          path: spec.template.metadata.annotations["checksum/config-secret"]
+          pattern: "^[a-f0-9]{64}$"
+        template: graphql/deployment.yaml
+
+  - it: should not add a config checksum when config is disabled
+    set:
+      config: null
+    asserts:
+      - notExists:
+          path: spec.template.metadata.annotations["checksum/config-secret"]
+        template: graphql/deployment.yaml
+
+  - it: should accept null pod annotations when config is enabled
+    set:
+      graphql:
+        podAnnotations: null
+    asserts:
+      - matchRegex:
+          path: spec.template.metadata.annotations["checksum/config-secret"]
+          pattern: "^[a-f0-9]{64}$"
         template: graphql/deployment.yaml
 
   # --- ServiceAccount ----------------------------------------------

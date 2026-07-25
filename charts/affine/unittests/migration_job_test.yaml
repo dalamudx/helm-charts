@@ -2,6 +2,7 @@ suite: test graphql migration job
 
 templates:
   - graphql/migration.yaml
+  - config-secret.yaml
 
 release:
   name: affine
@@ -16,24 +17,62 @@ tests:
     asserts:
       - hasDocuments:
           count: 1
+        template: graphql/migration.yaml
 
   - it: should use post-install and pre-upgrade hooks by default
     asserts:
       - equal:
           path: metadata.annotations["helm.sh/hook"]
           value: post-install,pre-upgrade
+        template: graphql/migration.yaml
 
   - it: should keep the configured hook weight by default
     asserts:
       - equal:
           path: metadata.annotations["helm.sh/hook-weight"]
           value: "-1"
+        template: graphql/migration.yaml
 
   - it: should keep the configured hook delete policy by default
     asserts:
       - equal:
           path: metadata.annotations["helm.sh/hook-delete-policy"]
           value: before-hook-creation
+        template: graphql/migration.yaml
+
+  - it: should retain custom pod annotations and use a config checksum
+    set:
+      graphql:
+        podAnnotations:
+          custom.annotation/key: "value"
+          checksum/config-secret: user-supplied-value
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations["custom.annotation/key"]
+          value: "value"
+        template: graphql/migration.yaml
+      - matchRegex:
+          path: spec.template.metadata.annotations["checksum/config-secret"]
+          pattern: "^[a-f0-9]{64}$"
+        template: graphql/migration.yaml
+
+  - it: should not add a config checksum when config is disabled
+    set:
+      config: null
+    asserts:
+      - notExists:
+          path: spec.template.metadata.annotations["checksum/config-secret"]
+        template: graphql/migration.yaml
+
+  - it: should accept null pod annotations when config is enabled
+    set:
+      graphql:
+        podAnnotations: null
+    asserts:
+      - matchRegex:
+          path: spec.template.metadata.annotations["checksum/config-secret"]
+          pattern: "^[a-f0-9]{64}$"
+        template: graphql/migration.yaml
 
   - it: should not render the migration job when disabled
     set:
@@ -43,3 +82,4 @@ tests:
     asserts:
       - hasDocuments:
           count: 0
+        template: graphql/migration.yaml

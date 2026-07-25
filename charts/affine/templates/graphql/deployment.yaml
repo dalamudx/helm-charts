@@ -12,9 +12,16 @@ spec:
       {{- include "graphql.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.graphql.podAnnotations }}
+      {{- if or .Values.graphql.podAnnotations .Values.config }}
       annotations:
+        {{- if .Values.config }}
+        {{- with (omit (default dict .Values.graphql.podAnnotations) "checksum/config-secret") }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
+        checksum/config-secret: {{ include (print $.Template.BasePath "/config-secret.yaml") . | sha256sum }}
+        {{- else }}
+        {{- toYaml .Values.graphql.podAnnotations | nindent 8 }}
+        {{- end }}
       {{- end }}
       labels:
         {{- include "graphql.selectorLabels" . | nindent 8 }}

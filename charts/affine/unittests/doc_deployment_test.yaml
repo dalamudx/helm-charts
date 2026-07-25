@@ -2,6 +2,7 @@ suite: test doc deployment
 
 templates:
   - doc/deployment.yaml
+  - config-secret.yaml
   - encryption-secret.yaml
   - database-secret.yaml
 
@@ -234,15 +235,38 @@ tests:
         template: doc/deployment.yaml
 
   # --- Pod annotations / labels ------------------------------------
-  - it: should apply pod annotations when doc.podAnnotations is set
+  - it: should retain custom pod annotations and use a config checksum
     set:
       doc:
         podAnnotations:
           custom.annotation/key: "value"
+          checksum/config-secret: user-supplied-value
     asserts:
       - equal:
           path: spec.template.metadata.annotations["custom.annotation/key"]
           value: "value"
+        template: doc/deployment.yaml
+      - matchRegex:
+          path: spec.template.metadata.annotations["checksum/config-secret"]
+          pattern: "^[a-f0-9]{64}$"
+        template: doc/deployment.yaml
+
+  - it: should not add a config checksum when config is disabled
+    set:
+      config: null
+    asserts:
+      - notExists:
+          path: spec.template.metadata.annotations["checksum/config-secret"]
+        template: doc/deployment.yaml
+
+  - it: should accept null pod annotations when config is enabled
+    set:
+      doc:
+        podAnnotations: null
+    asserts:
+      - matchRegex:
+          path: spec.template.metadata.annotations["checksum/config-secret"]
+          pattern: "^[a-f0-9]{64}$"
         template: doc/deployment.yaml
 
   # --- ServiceAccount ----------------------------------------------

@@ -12,9 +12,16 @@ spec:
       {{- include "front.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.front.podAnnotations }}
+      {{- if or .Values.front.podAnnotations .Values.config }}
       annotations:
+        {{- if .Values.config }}
+        {{- with (omit (default dict .Values.front.podAnnotations) "checksum/config-secret") }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
+        checksum/config-secret: {{ include (print $.Template.BasePath "/config-secret.yaml") . | sha256sum }}
+        {{- else }}
+        {{- toYaml .Values.front.podAnnotations | nindent 8 }}
+        {{- end }}
       {{- end }}
       labels:
         {{- include "front.selectorLabels" . | nindent 8 }}
