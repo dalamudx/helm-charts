@@ -389,6 +389,21 @@ tests:
       content:
         name: N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS
         value: 'true'
+      any: true
+    template: main/deployment.yaml
+  - contains:
+      path: spec.template.spec.containers[?(@.name == "n8n-main")].env
+      content:
+        name: N8N_CRASH_JOURNAL_PATH
+        value: /tmp/crash.journal
+      any: true
+    template: main/deployment.yaml
+  - contains:
+      path: spec.template.spec.containers[?(@.name == "n8n-main")].env
+      content:
+        name: N8N_DEPLOYMENT_ARTIFACT
+        value: "helm-chart/1.0.0"
+      any: true
     template: main/deployment.yaml
 - it: should set port environment variable when global.service.port is set
   set:

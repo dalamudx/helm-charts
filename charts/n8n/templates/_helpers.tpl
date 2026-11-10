@@ -375,6 +375,14 @@ Standard environment variables
   value: "false"
 - name: NODE_ENV
   value: production
+{{/* Each pod gets its own crash journal: the default lives in N8N_USER_FOLDER, which
+     multi-main and worker replicas may share through a ReadWriteMany volume. A shared
+     journal reports crashes that did not happen and one pod's shutdown deletes another's. */}}
+- name: N8N_CRASH_JOURNAL_PATH
+  value: /tmp/crash.journal
+{{/* Lets n8n's telemetry tell a chart install apart from other artifacts. */}}
+- name: N8N_DEPLOYMENT_ARTIFACT
+  value: {{ printf "helm-chart/%s" .Chart.Version | quote }}
 - name: N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS
   value: "true"
 - name: N8N_PORT

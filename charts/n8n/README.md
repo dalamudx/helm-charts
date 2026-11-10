@@ -111,6 +111,6 @@ helm uninstall my-n8n
 | taskRunners.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | taskRunners.image.tag | string | `""` | Image tag (defaults to chart appVersion). |
 | webhook.url | string | `""` | Webhook URL (include http/https schema). |
-| worker.suspendExecutionsOnShutdown | bool | `false` | Whether a worker that receives a shutdown signal suspends in-flight production executions at the next node boundary. Suspended executions are persisted as `waiting` and resumed on another worker, instead of running to completion (or being force-killed) on the exiting pod. Requires the pod's terminationGracePeriodSeconds to outlive `gracefulShutdownTimeout`. Maps to N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN. Default is false. |
+| worker.suspendExecutionsOnShutdown | bool | `false` | Whether a worker that receives a shutdown signal suspends in-flight production executions at the next node boundary. Suspended executions are persisted as `waiting` and resumed on another worker, instead of running to completion (or being force-killed) on the exiting pod. Requires the pod's terminationGracePeriodSeconds to outlive `gracefulShutdownTimeout`. Maps to N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN. Default is false. Ships in n8n 2.43.7+ and again from 2.45.0; the 2.44 series does not include it, so the variable is ignored there. |
 
 *(See [values.yaml](https://github.com/dalamudx/helm-charts/raw/refs/heads/main/charts/n8n/values.yaml) for the full list of configuration options.)*

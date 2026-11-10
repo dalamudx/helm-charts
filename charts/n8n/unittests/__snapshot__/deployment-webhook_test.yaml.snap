@@ -267,6 +267,10 @@ should match snapshot of postgres ssl certificate values:
                   value: "false"
                 - name: NODE_ENV
                   value: production
+                - name: N8N_CRASH_JOURNAL_PATH
+                  value: /tmp/crash.journal
+                - name: N8N_DEPLOYMENT_ARTIFACT
+                  value: helm-chart/1.0.0
                 - name: N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS
                   value: "true"
                 - name: N8N_PORT

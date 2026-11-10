@@ -470,6 +470,8 @@ worker:
   # worker, instead of running to completion (or being force-killed) on the exiting pod.
   # Requires the pod's terminationGracePeriodSeconds to outlive `gracefulShutdownTimeout`.
   # Maps to N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN. Default is false.
+  # Ships in n8n 2.43.7+ and again from 2.45.0; the 2.44 series does not include it, so the
+  # variable is ignored there.
   suspendExecutionsOnShutdown: false
 
   autoscaling:
