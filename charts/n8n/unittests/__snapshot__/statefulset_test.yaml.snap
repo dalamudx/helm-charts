@@ -114,6 +114,7 @@ should match snapshot of default values:
       N8N_METRICS_INCLUDE_CACHE_METRICS: "false"
       N8N_METRICS_INCLUDE_CREDENTIAL_TYPE_LABEL: "false"
       N8N_METRICS_INCLUDE_DEFAULT_METRICS: "true"
+      N8N_METRICS_INCLUDE_ENCRYPTION_METRICS: "false"
       N8N_METRICS_INCLUDE_MESSAGE_EVENT_BUS_METRICS: "false"
       N8N_METRICS_INCLUDE_NODE_TYPE_LABEL: "false"
       N8N_METRICS_INCLUDE_QUEUE_METRICS: "false"
@@ -143,6 +144,7 @@ should match snapshot of default values:
   10: |
     apiVersion: v1
     data:
+      N8N_AZURE_STORAGE_CUSTOM_ENDPOINTS_ENABLED: "false"
       N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
       N8N_BLOCK_FILE_ACCESS_TO_N8N_FILES: "true"
       N8N_SECURE_COOKIE: "true"
@@ -206,7 +208,7 @@ should match snapshot of default values:
       template:
         metadata:
           annotations:
-            checksum/config: 7b752256dd1c010e7b7712d24fcc7ce99264b30c97c9429b85b7612ea6b6588e
+            checksum/config: 5a834943e77aa8b6f6a0d51fcd057eeeded04f8cab9ff7f3074d7dcd6012625d
           labels:
             app.kubernetes.io/component: main
             app.kubernetes.io/instance: n8n
@@ -451,6 +453,7 @@ should match snapshot of postgres ssl certificate values:
       N8N_METRICS_INCLUDE_CACHE_METRICS: "false"
       N8N_METRICS_INCLUDE_CREDENTIAL_TYPE_LABEL: "false"
       N8N_METRICS_INCLUDE_DEFAULT_METRICS: "true"
+      N8N_METRICS_INCLUDE_ENCRYPTION_METRICS: "false"
       N8N_METRICS_INCLUDE_MESSAGE_EVENT_BUS_METRICS: "false"
       N8N_METRICS_INCLUDE_NODE_TYPE_LABEL: "false"
       N8N_METRICS_INCLUDE_QUEUE_METRICS: "false"
@@ -480,6 +483,7 @@ should match snapshot of postgres ssl certificate values:
   10: |
     apiVersion: v1
     data:
+      N8N_AZURE_STORAGE_CUSTOM_ENDPOINTS_ENABLED: "false"
       N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
       N8N_BLOCK_FILE_ACCESS_TO_N8N_FILES: "true"
       N8N_SECURE_COOKIE: "true"
@@ -543,7 +547,7 @@ should match snapshot of postgres ssl certificate values:
       template:
         metadata:
           annotations:
-            checksum/config: dd8b5756a534a6e842fb64ad0df7e71c2cd53bd0a47b13e19ce03ac84fae5631
+            checksum/config: c4efed5a2e4ef243ca6ce0be022e2d5469ed0704b0830a887436fc44e3c0d617
           labels:
             app.kubernetes.io/component: main
             app.kubernetes.io/instance: n8n

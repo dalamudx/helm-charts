@@ -1297,3 +1297,111 @@ tests:
           path: data.N8N_PATH
           value: "/n8n/"
 
+  - it: should set N8N_STORAGE_PATH from binaryData.localStoragePath regardless of binaryData.mode
+    set:
+      binaryData:
+        mode: s3
+        localStoragePath: /data/n8n
+    documentSelector:
+      path: metadata.name
+      value: n8n-binary-data-configmap
+    asserts:
+      - equal:
+          path: data.N8N_STORAGE_PATH
+          value: /data/n8n
+      - equal:
+          path: data.N8N_DEFAULT_BINARY_DATA_MODE
+          value: s3
+
+  - it: should set azure blob storage configuration when binaryData.mode is azure
+    set:
+      binaryData:
+        mode: azure
+        azure:
+          containerName: n8n
+          accountName: myaccount
+          endpoint: https://myaccount.blob.core.windows.net
+    documentSelector:
+      path: metadata.name
+      value: n8n-binary-data-configmap
+    asserts:
+      - equal:
+          path: data.N8N_EXTERNAL_STORAGE_AZURE_CONTAINER_NAME
+          value: n8n
+      - equal:
+          path: data.N8N_EXTERNAL_STORAGE_AZURE_ACCOUNT_NAME
+          value: myaccount
+      - equal:
+          path: data.N8N_EXTERNAL_STORAGE_AZURE_ENDPOINT
+          value: https://myaccount.blob.core.windows.net
+      - equal:
+          path: data.N8N_EXTERNAL_STORAGE_AZURE_AUTH_AUTO_DETECT
+          value: "false"
+
+  - it: should not set azure account name when azure auth is auto detected
+    set:
+      binaryData:
+        mode: azure
+        azure:
+          containerName: n8n
+          authAutoDetect: true
+    documentSelector:
+      path: metadata.name
+      value: n8n-binary-data-configmap
+    asserts:
+      - notExists:
+          path: data.N8N_EXTERNAL_STORAGE_AZURE_ACCOUNT_NAME
+      - equal:
+          path: data.N8N_EXTERNAL_STORAGE_AZURE_AUTH_AUTO_DETECT
+          value: "true"
+
+
+  - it: should render the scheduler configmap when scheduler.enabled is set
+    set:
+      scheduler:
+        enabled: true
+    documentSelector:
+      path: metadata.name
+      value: n8n-scheduler-configmap
+    asserts:
+      - equal:
+          path: data.N8N_SCHEDULER_ENABLED
+          value: "true"
+
+
+  - it: should render the otel configmap when otel.enabled is true
+    set:
+      otel:
+        enabled: true
+        endpoint: http://collector:4318
+        traces:
+          sampleRate: 0.5
+    documentSelector:
+      path: metadata.name
+      value: n8n-otel-configmap
+    asserts:
+      - equal:
+          path: data.N8N_OTEL_ENABLED
+          value: "true"
+      - equal:
+          path: data.N8N_OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://collector:4318
+      - equal:
+          path: data.N8N_OTEL_TRACES_SAMPLE_RATE
+          value: "0.5"
+      - equal:
+          path: data.N8N_OTEL_TRACES_PRODUCTION_ONLY
+          value: "true"
+
+  - it: should set encryption metrics flag in metrics configmap
+    set:
+      serviceMonitor:
+        include:
+          encryptionMetrics: true
+    documentSelector:
+      path: metadata.name
+      value: n8n-metrics-configmap
+    asserts:
+      - equal:
+          path: data.N8N_METRICS_INCLUDE_ENCRYPTION_METRICS
+          value: "true"

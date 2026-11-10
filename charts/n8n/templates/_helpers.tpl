@@ -445,6 +445,27 @@ Standard environment variables
       name: {{ default (printf "%s-s3-secret" (include "n8n.names.fullname" .)) .Values.binaryData.s3.existingSecret }}
       key: secret-access-key
 {{- end }}
+{{- if and (eq .Values.binaryData.mode "azure") (not .Values.binaryData.azure.authAutoDetect) }}
+- name: N8N_EXTERNAL_STORAGE_AZURE_CONNECTION_STRING
+  valueFrom:
+    secretKeyRef:
+      name: {{ default (printf "%s-azure-secret" (include "n8n.names.fullname" .)) .Values.binaryData.azure.existingSecret }}
+      key: connection-string
+      optional: true
+- name: N8N_EXTERNAL_STORAGE_AZURE_ACCOUNT_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ default (printf "%s-azure-secret" (include "n8n.names.fullname" .)) .Values.binaryData.azure.existingSecret }}
+      key: account-key
+      optional: true
+{{- end }}
+{{- if and .Values.otel.enabled (or .Values.otel.headers .Values.otel.existingHeadersSecret) }}
+- name: N8N_OTEL_EXPORTER_OTLP_HEADERS
+  valueFrom:
+    secretKeyRef:
+      name: {{ default (printf "%s-otel-headers-secret" (include "n8n.names.fullname" .)) .Values.otel.existingHeadersSecret }}
+      key: headers
+{{- end }}
 {{- if eq .Values.taskRunners.mode "internal" }}
 {{- include "n8n.runners.env" . | nindent 0 }}
 {{- end }}
@@ -530,6 +551,14 @@ Standard environment variable sources
     name: {{ template "n8n.names.fullname" . }}-workflows-configmap
 - configMapRef:
     name: {{ template "n8n.names.fullname" . }}-ai-assistant-configmap
+{{- if ne (toString .Values.scheduler.enabled) "" }}
+- configMapRef:
+    name: {{ template "n8n.names.fullname" . }}-scheduler-configmap
+{{- end }}
+{{- if .Values.otel.enabled }}
+- configMapRef:
+    name: {{ template "n8n.names.fullname" . }}-otel-configmap
+{{- end }}
 {{- if .Values.license.enabled }}
 - configMapRef:
     name: {{ template "n8n.names.fullname" . }}-license-configmap

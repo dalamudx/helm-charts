@@ -130,7 +130,7 @@ npmRegistry:
 
 # Configuration for binary data storage
 binaryData:
-  # -- Binary data storage mode. Valid values: `default` (in-memory, deprecated) | `filesystem` | `s3` | `database`.
+  # -- Binary data storage mode. Valid values: `default` (in-memory, deprecated) | `filesystem` | `s3` | `azure` | `database`.
   # Leave empty to let n8n choose: `filesystem` in regular mode, `database` in queue mode.
   mode: ""
   # -- Base storage path for `filesystem` mode, also used for execution data stored on disk.
@@ -153,7 +153,23 @@ binaryData:
     # -- Use path-style addressing for S3 requests (needed for MinIO and most S3-compatible stores).
     # Maps to N8N_EXTERNAL_STORAGE_S3_FORCE_PATH_STYLE. Default is true.
     forcePathStyle: true
-
+  # Azure Blob storage configurations. For more information, see https://docs.n8n.io/hosting/configuration/environment-variables/external-data-storage/
+  azure:
+    # -- Azure Storage connection string. Takes precedence over account name/key when set.
+    connectionString: ""
+    # -- Storage account name, used with an account key or managed identity.
+    accountName: ""
+    # -- Storage account key, used with the account name.
+    accountKey: ""
+    # -- Existing secret with keys `connection-string` and `account-key`.
+    existingSecret: ""
+    # -- Blob container to store binary data in.
+    containerName: ""
+    # -- Custom blob endpoint, e.g. for Azurite. Requires security.azureStorageCustomEndpoints.
+    endpoint: ""
+    # -- Authenticate via `DefaultAzureCredential` (managed identity, env, Azure CLI) instead of a key.
+    # Ignores accountKey and connectionString when enabled.
+    authAutoDetect: false
 # n8n database configurations
 db:
   # Prefix to use for table names.
@@ -262,6 +278,38 @@ versionNotifications:
   enabled: false
   endpoint: "https://api.n8n.io/api/versions/"
   infoUrl: "https://docs.n8n.io/hosting/installation/updating/"
+
+# OpenTelemetry tracing. For more information, see https://docs.n8n.io/deploy/host-n8n/configure-n8n/basic-configuration/use-environment-variables/opentelemetry/
+otel:
+  # -- Whether to export execution traces over OTLP.
+  # Maps to N8N_OTEL_ENABLED. Default is false.
+  enabled: false
+  # -- OTLP collector endpoint. Maps to N8N_OTEL_EXPORTER_OTLP_ENDPOINT.
+  endpoint: "http://localhost:4318"
+  # -- OTLP protocol: `http/protobuf` or `grpc`. Maps to N8N_OTEL_EXPORTER_OTLP_PROTOCOL.
+  protocol: "http/protobuf"
+  # -- OTLP traces path. Maps to N8N_OTEL_EXPORTER_OTLP_TRACING_PATH.
+  tracingPath: "/v1/traces"
+  # -- `service.name` reported to the collector. Maps to N8N_OTEL_EXPORTER_SERVICE_NAME.
+  serviceName: "n8n"
+  # -- OTLP headers, e.g. `authorization=Bearer <token>`. Stored in a Secret.
+  # Maps to N8N_OTEL_EXPORTER_OTLP_HEADERS.
+  headers: ""
+  # -- The name of an existing secret with a `headers` key. Overrides `otel.headers`.
+  existingHeadersSecret: ""
+  # -- Milliseconds to wait for the collector at startup before giving up.
+  # Maps to N8N_OTEL_STARTUP_CONNECTIVITY_TIMEOUT_MS.
+  startupConnectivityTimeoutMs: 2000
+  traces:
+    # -- Fraction of executions to trace, 0.0-1.0. Maps to N8N_OTEL_TRACES_SAMPLE_RATE.
+    sampleRate: 1.0
+    # -- Trace only production executions of active workflows, not manual/test runs.
+    # Maps to N8N_OTEL_TRACES_PRODUCTION_ONLY.
+    productionOnly: true
+    # -- Emit a span per node. Maps to N8N_OTEL_TRACES_INCLUDE_NODE_SPANS.
+    includeNodeSpans: true
+    # -- Propagate trace context to outbound HTTP requests. Maps to N8N_OTEL_TRACES_INJECT_OUTBOUND.
+    injectOutbound: true
 
 api:
   enabled: true
@@ -811,6 +859,13 @@ workflowHistory:
   # Time (in hours) to keep workflow history versions for. To disable it, use -1 as a value
   pruneTime: 336
 
+# The durable scheduler, which runs time-based workflows (Schedule Trigger) from a
+# database-backed queue instead of each instance's memory.
+scheduler:
+  # -- Enable the durable scheduler. Leave empty to use n8n's default (off before 2.45, on from 2.45).
+  # Matters for multi-main and queue-mode setups, where the in-memory scheduler fires each
+  # schedule once per instance. Maps to N8N_SCHEDULER_ENABLED.
+  enabled: ""
 # -- The base path under which n8n runs. Useful for serving n8n at a sub-path (e.g. /n8n/). Include a trailing slash.
 # Maps to N8N_PATH environment variable.
 n8nPath: "/"
@@ -844,6 +899,9 @@ security:
   # -- Whether to use secure cookies (HTTPS only). Set to false in HTTP-only environments.
   # Maps to N8N_SECURE_COOKIE. Default is true.
   secureCookie: true
+  # -- Whether Azure Storage Shared Key credentials may target a custom endpoint (private endpoint, custom domain, Azurite).
+  # Azure sovereign clouds work without it. Maps to N8N_AZURE_STORAGE_CUSTOM_ENDPOINTS_ENABLED. Default is false.
+  azureStorageCustomEndpoints: false
 
 # Workflow-related configurations. For more information see: https://docs.n8n.io/hosting/configuration/environment-variables/workflows/
 workflows:
@@ -911,3 +969,4 @@ serviceMonitor:
     apiMethodLabel: false
     apiStatusCodeLabel: false
     queueMetrics: false
+    encryptionMetrics: false

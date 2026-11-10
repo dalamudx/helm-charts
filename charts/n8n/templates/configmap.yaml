@@ -190,6 +190,7 @@ data:
   N8N_METRICS_INCLUDE_API_METHOD_LABEL: {{ .Values.serviceMonitor.include.apiMethodLabel | quote }}
   N8N_METRICS_INCLUDE_API_STATUS_CODE_LABEL: {{ .Values.serviceMonitor.include.apiStatusCodeLabel | quote }}
   N8N_METRICS_INCLUDE_QUEUE_METRICS: {{ .Values.serviceMonitor.include.queueMetrics | quote }}
+  N8N_METRICS_INCLUDE_ENCRYPTION_METRICS: {{ .Values.serviceMonitor.include.encryptionMetrics | quote }}
 {{- if eq .Values.taskRunners.mode "external" }}
 ---
 apiVersion: v1
@@ -242,7 +243,7 @@ data:
 {{- if .Values.binaryData.mode }}
   N8N_DEFAULT_BINARY_DATA_MODE: {{ .Values.binaryData.mode | quote }}
 {{- end }}
-{{- if and (eq .Values.binaryData.mode "filesystem") (ne .Values.binaryData.localStoragePath "") }}
+{{- if .Values.binaryData.localStoragePath }}
   N8N_STORAGE_PATH: {{ .Values.binaryData.localStoragePath | quote }}
 {{- end }}
 {{- if eq .Values.binaryData.mode "s3" }}
@@ -250,6 +251,14 @@ data:
   N8N_EXTERNAL_STORAGE_S3_BUCKET_NAME: {{ .Values.binaryData.s3.bucketName | quote }}
   N8N_EXTERNAL_STORAGE_S3_BUCKET_REGION: {{ .Values.binaryData.s3.bucketRegion | quote }}
   N8N_EXTERNAL_STORAGE_S3_FORCE_PATH_STYLE: {{ .Values.binaryData.s3.forcePathStyle | quote }}
+{{- end }}
+{{- if eq .Values.binaryData.mode "azure" }}
+  N8N_EXTERNAL_STORAGE_AZURE_CONTAINER_NAME: {{ .Values.binaryData.azure.containerName | quote }}
+  N8N_EXTERNAL_STORAGE_AZURE_ENDPOINT: {{ .Values.binaryData.azure.endpoint | quote }}
+  N8N_EXTERNAL_STORAGE_AZURE_AUTH_AUTO_DETECT: {{ .Values.binaryData.azure.authAutoDetect | quote }}
+  {{- if not .Values.binaryData.azure.authAutoDetect }}
+  N8N_EXTERNAL_STORAGE_AZURE_ACCOUNT_NAME: {{ .Values.binaryData.azure.accountName | quote }}
+  {{- end }}
 {{- end }}
 ---
 apiVersion: v1
@@ -262,6 +271,7 @@ data:
   N8N_SECURE_COOKIE: {{ .Values.security.secureCookie | quote }}
   N8N_BLOCK_ENV_ACCESS_IN_NODE: {{ .Values.security.blockEnvAccessInNode | quote }}
   N8N_BLOCK_FILE_ACCESS_TO_N8N_FILES: {{ .Values.security.blockFileAccessToN8nFiles | quote }}
+  N8N_AZURE_STORAGE_CUSTOM_ENDPOINTS_ENABLED: {{ .Values.security.azureStorageCustomEndpoints | quote }}
 {{- if .Values.security.restrictFileAccessTo }}
   N8N_RESTRICT_FILE_ACCESS_TO: {{ .Values.security.restrictFileAccessTo | quote }}
 {{- end }}
@@ -287,4 +297,35 @@ metadata:
 data:
 {{- if .Values.aiAssistant.baseUrl }}
   N8N_AI_ASSISTANT_BASE_URL: {{ .Values.aiAssistant.baseUrl | quote }}
+{{- end }}
+{{- if ne (toString .Values.scheduler.enabled) "" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "n8n.names.fullname" . }}-scheduler-configmap
+  labels:
+    {{- include "n8n.labels.standard" . | nindent 4 }}
+data:
+  N8N_SCHEDULER_ENABLED: {{ .Values.scheduler.enabled | quote }}
+{{- end }}
+{{- if .Values.otel.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "n8n.names.fullname" . }}-otel-configmap
+  labels:
+    {{- include "n8n.labels.standard" . | nindent 4 }}
+data:
+  N8N_OTEL_ENABLED: "true"
+  N8N_OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.otel.endpoint | quote }}
+  N8N_OTEL_EXPORTER_OTLP_PROTOCOL: {{ .Values.otel.protocol | quote }}
+  N8N_OTEL_EXPORTER_OTLP_TRACING_PATH: {{ .Values.otel.tracingPath | quote }}
+  N8N_OTEL_EXPORTER_SERVICE_NAME: {{ .Values.otel.serviceName | quote }}
+  N8N_OTEL_TRACES_SAMPLE_RATE: {{ .Values.otel.traces.sampleRate | quote }}
+  N8N_OTEL_TRACES_PRODUCTION_ONLY: {{ .Values.otel.traces.productionOnly | quote }}
+  N8N_OTEL_TRACES_INCLUDE_NODE_SPANS: {{ .Values.otel.traces.includeNodeSpans | quote }}
+  N8N_OTEL_TRACES_INJECT_OUTBOUND: {{ .Values.otel.traces.injectOutbound | quote }}
+  N8N_OTEL_STARTUP_CONNECTIVITY_TIMEOUT_MS: {{ .Values.otel.startupConnectivityTimeoutMs | quote }}
 {{- end }}
