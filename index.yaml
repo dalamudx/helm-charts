@@ -234,6 +234,28 @@ entries:
     version: 1.0.1
   n8n:
   - apiVersion: v2
+    appVersion: 2.41.4
+    created: "2026-11-10T11:53:56.451585723Z"
+    description: Helm chart for n8n - A workflow automation platform that gives technical
+      teams the flexibility of code with the speed of no-code.
+    digest: 32d4f636a7344254210b09311e50be9e21c3e3af122fd1595a605d1503859f7e
+    home: https://n8n.io
+    icon: https://avatars1.githubusercontent.com/u/45487711?s=200&v=4
+    keywords:
+    - n8n
+    - Workflow Automation
+    - Automation
+    - low-code-plattform
+    kubeVersion: '>=1.23.0-0'
+    name: n8n
+    sources:
+    - https://github.com/n8n-io/n8n
+    - https://github.com/dalamudx/helm-charts
+    type: application
+    urls:
+    - https://github.com/dalamudx/helm-charts/releases/download/n8n-1.0.119/n8n-1.0.119.tgz
+    version: 1.0.119
+  - apiVersion: v2
     appVersion: 2.41.3
     created: "2026-11-10T11:51:01.330309223Z"
     description: Helm chart for n8n - A workflow automation platform that gives technical
@@ -3038,4 +3060,4 @@ entries:
     urls:
     - https://github.com/dalamudx/helm-charts/releases/download/vaultwarden-1.0.0/vaultwarden-1.0.0.tgz
     version: 1.0.0
-generated: "2026-11-10T11:51:01.48778371Z"
+generated: "2026-11-10T11:53:56.624512948Z"
