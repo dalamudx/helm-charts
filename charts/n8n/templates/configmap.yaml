@@ -138,6 +138,7 @@ data:
   {{- if eq .Values.webhook.mode "queue" }}
   N8N_DISABLE_PRODUCTION_MAIN_PROCESS: "true"
   {{- end }}
+  N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN: {{ .Values.worker.suspendExecutionsOnShutdown | quote }}
   {{- if .Values.db.redis.tls.enabled }}
   QUEUE_BULL_REDIS_TLS: {{ .Values.db.redis.tls.enabled | quote }}
   {{- end }}

@@ -534,6 +534,24 @@ tests:
       - equal:
           path: data.OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS
           value: "true"
+      - equal:
+          path: data.N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN
+          value: "false"
+
+  - it: should suspend in-flight executions on worker shutdown when worker.suspendExecutionsOnShutdown is true
+    set:
+      db:
+        type: postgresdb
+      worker:
+        mode: queue
+        suspendExecutionsOnShutdown: true
+    documentSelector:
+      path: metadata.name
+      value: n8n-queue-configmap
+    asserts:
+      - equal:
+          path: data.N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN
+          value: "true"
 
   - it: should set execution mode to queue when db type set to postgresdb and webhook.mode is queue
     set:

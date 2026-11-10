@@ -89,6 +89,7 @@ should match snapshot of postgres ssl certificate values:
     data:
       EXECUTIONS_MODE: queue
       N8N_DISABLE_PRODUCTION_MAIN_PROCESS: "true"
+      N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN: "false"
       OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS: "true"
       QUEUE_BULL_REDIS_DB: "0"
       QUEUE_BULL_REDIS_DUALSTACK: "false"
@@ -247,7 +248,7 @@ should match snapshot of postgres ssl certificate values:
       template:
         metadata:
           annotations:
-            checksum/config: ed03445fa5a7e4d1f80b3855c4a304549f00ea3e2feece45df68765ad88ee9ec
+            checksum/config: ab29f65e17f96447d933bdb3d0919a8f2cbdf47c6fc38d452bb63f2e59ad6201
           labels:
             app.kubernetes.io/component: webhook
             app.kubernetes.io/instance: n8n

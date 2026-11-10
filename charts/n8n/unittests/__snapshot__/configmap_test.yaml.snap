@@ -85,6 +85,7 @@ should match snapshot of Redis values:
     data:
       EXECUTIONS_MODE: queue
       N8N_DISABLE_PRODUCTION_MAIN_PROCESS: "true"
+      N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN: "false"
       OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS: "true"
       QUEUE_BULL_REDIS_CLUSTER_NODES: redis-1:6379,redis-2:6379
       QUEUE_BULL_REDIS_DB: "0"
