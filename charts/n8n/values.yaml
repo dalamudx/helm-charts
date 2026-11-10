@@ -52,7 +52,7 @@ global:
   log:
     # -- Log level. Options: `error` \| `warn` \| `info` \| `debug`.
     level: info
-    # -- Log output target. Options: `console` \| `file`.
+    # Log output target. Options: `console` \| `file`.
     output:
       - console
     # Scopes to filter logs by. Nothing is filtered by default. Supported log scopes: concurrency, external-secrets, license, multi-main-setup, pubsub, redis, scaling, waiting-executions
@@ -72,9 +72,7 @@ commonAnnotations: {}
 
 # Node configurations for built-in and external npm packages
 nodes:
-  # -- Whether workflows may add or change deprecated nodes and node versions. Saved workflows that
-  # already contain one keep running, and removing it or moving to a supported version is allowed.
-  # Set to false to import older backups that contain deprecated nodes.
+  # -- Whether workflows may add or change deprecated nodes. Set to false to import older backups.
   # Maps to N8N_DEPRECATED_NODES_BLOCK. Default is true.
   blockDeprecated: true
   # Enable built-in node functions (e.g., HTTP Request, Code Node, etc.)
@@ -135,11 +133,12 @@ npmRegistry:
 
 # Configuration for binary data storage
 binaryData:
-  # -- Binary data storage mode. Valid values: `default` (in-memory, deprecated) | `filesystem` | `s3` | `azure` | `database`.
-  # Leave empty to let n8n choose: `filesystem` in regular mode, `database` in queue mode.
+  # -- Storage mode: `filesystem`, `s3`, `azure` or `database`.
+  # Empty lets n8n choose: `filesystem` in regular mode, `database` in queue mode.
+  # Maps to N8N_DEFAULT_BINARY_DATA_MODE.
   mode: ""
-  # -- Base storage path for `filesystem` mode, also used for execution data stored on disk.
-  # Maps to N8N_STORAGE_PATH. Leave empty to use the default (`~/.n8n/storage`).
+  # Base path for `filesystem` storage, also used for execution data on disk.
+  # Maps to N8N_STORAGE_PATH. Empty uses the default (`~/.n8n/storage`).
   localStoragePath: ""
   # S3-compatible external storage configurations. For more information, see https://docs.n8n.io/hosting/configuration/environment-variables/external-data-storage/
   s3:
@@ -149,30 +148,30 @@ binaryData:
     bucketName: ""
     # -- S3 bucket region.
     bucketRegion: "us-east-1"
-    # -- S3 access key.
+    # S3 access key.
     accessKey: ""
     # -- S3 access secret.
     accessSecret: ""
     # -- Existing secret for S3 credentials (keys: `access-key-id`, `secret-access-key`).
     existingSecret: ""
-    # -- Use path-style addressing for S3 requests (needed for MinIO and most S3-compatible stores).
+    # Path-style addressing, needed for MinIO and most S3-compatible stores.
     # Maps to N8N_EXTERNAL_STORAGE_S3_FORCE_PATH_STYLE. Default is true.
     forcePathStyle: true
   # Azure Blob storage configurations. For more information, see https://docs.n8n.io/hosting/configuration/environment-variables/external-data-storage/
   azure:
-    # -- Azure Storage connection string. Takes precedence over account name/key when set.
+    # Storage connection string. Takes precedence over account name and key.
     connectionString: ""
-    # -- Storage account name, used with an account key or managed identity.
+    # Storage account name, used with an account key or managed identity.
     accountName: ""
-    # -- Storage account key, used with the account name.
+    # Storage account key, used with the account name.
     accountKey: ""
-    # -- Existing secret with keys `connection-string` and `account-key`.
+    # Existing secret with keys `connection-string` and `account-key`.
     existingSecret: ""
-    # -- Blob container to store binary data in.
+    # Blob container for binary data.
     containerName: ""
-    # -- Custom blob endpoint, e.g. for Azurite. Requires security.azureStorageCustomEndpoints.
+    # Custom blob endpoint (Azurite, sovereign clouds). Needs security.azureStorageCustomEndpoints.
     endpoint: ""
-    # -- Authenticate via `DefaultAzureCredential` (managed identity, env, Azure CLI) instead of a key.
+    # Use `DefaultAzureCredential` (managed identity, env, Azure CLI) instead of a key.
     # Ignores accountKey and connectionString when enabled.
     authAutoDetect: false
 # n8n database configurations
@@ -193,11 +192,11 @@ db:
   postgresdb:
     # -- PostgreSQL server host
     host: ""
-    # -- PostgreSQL username
+    # PostgreSQL username
     username: "postgres"
     # -- PostgreSQL password
     password: ""
-    # -- PostgreSQL server port
+    # PostgreSQL server port
     port: 5432
     # -- PostgreSQL database name.
     database: n8n
@@ -209,11 +208,11 @@ db:
     connectionTimeout: 20000
     # Amount of time before an idle connection is eligible for eviction for being idle.
     idleConnectionTimeout: 30000
-    # -- The PostgreSQL schema.
+    # The PostgreSQL schema.
     schema: public
     # The PostgreSQL connection SSL settings. Find more information from here: https://docs.n8n.io/hosting/configuration/supported-databases-settings/#postgresdb
     ssl:
-      # -- Whether to enable SSL.
+      # Whether to enable SSL.
       enabled: false
       # The PostgreSQL base64 encoded version of SSL certificate authority file content.
       base64EncodedCertificateAuthorityFile: ""
@@ -233,15 +232,15 @@ db:
       rejectUnauthorized: true
 
   redis:
-    # -- Redis database for Bull queue.
+    # Redis database for Bull queue.
     database: 0
     # -- Redis server host
     host: ""
-    # -- Redis username
+    # Redis username
     username: ""
     # -- Redis password
     password: ""
-    # -- Redis server port
+    # Redis server port
     port: 6379
     # -- Existing secret with `redis-password` key. Overrides `db.redis.password`.
     existingSecret: ""
@@ -286,34 +285,30 @@ versionNotifications:
 
 # OpenTelemetry tracing. For more information, see https://docs.n8n.io/deploy/host-n8n/configure-n8n/basic-configuration/use-environment-variables/opentelemetry/
 otel:
-  # -- Whether to export execution traces over OTLP.
-  # Maps to N8N_OTEL_ENABLED. Default is false.
+  # -- Export execution traces over OTLP. Maps to N8N_OTEL_ENABLED.
   enabled: false
-  # -- OTLP collector endpoint. Maps to N8N_OTEL_EXPORTER_OTLP_ENDPOINT.
+  # OTLP collector endpoint.
   endpoint: "http://localhost:4318"
-  # -- OTLP protocol: `http/protobuf` or `grpc`. Maps to N8N_OTEL_EXPORTER_OTLP_PROTOCOL.
+  # OTLP protocol: `http/protobuf` or `grpc`.
   protocol: "http/protobuf"
-  # -- OTLP traces path. Maps to N8N_OTEL_EXPORTER_OTLP_TRACING_PATH.
+  # OTLP traces path.
   tracingPath: "/v1/traces"
-  # -- `service.name` reported to the collector. Maps to N8N_OTEL_EXPORTER_SERVICE_NAME.
+  # `service.name` reported to the collector.
   serviceName: "n8n"
-  # -- OTLP headers, e.g. `authorization=Bearer <token>`. Stored in a Secret.
-  # Maps to N8N_OTEL_EXPORTER_OTLP_HEADERS.
+  # OTLP headers, e.g. `authorization=Bearer <token>`. Stored in a Secret.
   headers: ""
-  # -- The name of an existing secret with a `headers` key. Overrides `otel.headers`.
+  # The name of an existing secret with a `headers` key. Overrides `otel.headers`.
   existingHeadersSecret: ""
-  # -- Milliseconds to wait for the collector at startup before giving up.
-  # Maps to N8N_OTEL_STARTUP_CONNECTIVITY_TIMEOUT_MS.
+  # Milliseconds to wait for the collector at startup.
   startupConnectivityTimeoutMs: 2000
   traces:
-    # -- Fraction of executions to trace, 0.0-1.0. Maps to N8N_OTEL_TRACES_SAMPLE_RATE.
+    # Fraction of executions to trace, 0.0-1.0.
     sampleRate: 1.0
-    # -- Trace only production executions of active workflows, not manual/test runs.
-    # Maps to N8N_OTEL_TRACES_PRODUCTION_ONLY.
+    # Trace only production executions, not manual/test runs.
     productionOnly: true
-    # -- Emit a span per node. Maps to N8N_OTEL_TRACES_INCLUDE_NODE_SPANS.
+    # Emit a span per node.
     includeNodeSpans: true
-    # -- Propagate trace context to outbound HTTP requests. Maps to N8N_OTEL_TRACES_INJECT_OUTBOUND.
+    # Propagate trace context to outbound HTTP requests.
     injectOutbound: true
 
 api:
@@ -321,11 +316,10 @@ api:
   path: api
   swagger:
     enabled: true
-  # Per-API-key rate limiting for the public API (`/api/v1/*`). Maps to
-  # N8N_PUBLIC_API_RATE_LIMIT_ENABLED. The limits and windows themselves have sane defaults
-  # (1200 reads and 600 writes per key per minute); set them with `main.extraEnvVars`,
-  # `worker.extraEnvVars` or `global.extraEnvVars` if you need different ones.
   rateLimit:
+    # -- Per-API-key rate limiting for the public API (`/api/v1/*`).
+    # Maps to N8N_PUBLIC_API_RATE_LIMIT_ENABLED. The limits keep n8n's defaults
+    # (1200 reads and 600 writes per key per minute); override them with extraEnvVars.
     enabled: false
 
 # n8n enterprise license configurations
@@ -460,7 +454,7 @@ main:
 
 # Worker node configurations
 worker:
-  # -- Worker node image configuration.
+  # Worker node image configuration.
   image:
     repository: n8nio/n8n
     tag: ""
@@ -471,13 +465,8 @@ worker:
   concurrency: 10
   count: 2
   allNodes: false
-  # -- Whether a worker that receives a shutdown signal suspends in-flight production executions at
-  # the next node boundary. Suspended executions are persisted as `waiting` and resumed on another
-  # worker, instead of running to completion (or being force-killed) on the exiting pod.
-  # Requires the pod's terminationGracePeriodSeconds to outlive `gracefulShutdownTimeout`,
-  # which the top-level `terminationGracePeriodSeconds` default derives automatically.
-  # Maps to N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN. Default is false.
-  # Ships in n8n 2.43.7-2.43.8 and from 2.45.0, so the 2.44 series ignores it.
+  # -- Park in-flight executions at the next node boundary on shutdown, for another worker to resume.
+  # Maps to N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN. Ships in n8n 2.43.7-2.43.8 and 2.45.0+.
   suspendExecutionsOnShutdown: false
 
   autoscaling:
@@ -600,7 +589,7 @@ worker:
 
 # Webhook node configurations
 webhook:
-  # -- Webhook node image configuration.
+  # Webhook node image configuration.
   image:
     repository: n8nio/n8n
     tag: ""
@@ -616,7 +605,7 @@ webhook:
   # MCP webhook configuration. This is only used when the webhook mode is set to `queue` and the database type is set to `postgresdb`.
   mcp:
     enabled: true
-    # -- MCP webhook node image configuration.
+    # MCP webhook node image configuration.
     image:
       repository: n8nio/n8n
       tag: ""
@@ -827,10 +816,10 @@ webhook:
 # Task runners mode. Please follow the documentation for more information: https://docs.n8n.io/hosting/configuration/task-runners/
 taskRunners:
   image:
-    # -- Image registry. Overrides global.image.registry.
+    # Image registry. Overrides global.image.registry.
     registry: ""
     repository: n8nio/runners
-    # -- Image pull policy.
+    # Image pull policy.
     pullPolicy: IfNotPresent
     # -- Image tag (defaults to chart appVersion).
     tag: ""
@@ -881,19 +870,16 @@ workflowHistory:
 # The durable scheduler, which runs time-based workflows (Schedule Trigger) from a
 # database-backed queue instead of each instance's memory.
 scheduler:
-  # -- Enable the durable scheduler. Leave empty to use n8n's default: off before 2.45, on from 2.45.
-  # Set to false to keep the in-memory scheduler on 2.45+, where it is no longer possible to
-  # opt out through a feature flag. Matters for multi-main and queue-mode setups, where the
-  # in-memory scheduler fires each schedule once per instance. Maps to N8N_SCHEDULER_ENABLED.
+  # -- Run Schedule Trigger from the durable scheduler. Empty keeps n8n's default (on from 2.45).
+  # Maps to N8N_SCHEDULER_ENABLED.
   enabled: ""
-# -- The base path under which n8n runs. Useful for serving n8n at a sub-path (e.g. /n8n/). Include a trailing slash.
-# Maps to N8N_PATH environment variable.
+# -- Base path to serve n8n under, with a trailing slash (e.g. `/n8n/`). Maps to N8N_PATH.
 n8nPath: "/"
 
-# -- If you install n8n first time, you can keep this empty and it will be auto generated and never change again. If you already have a encryption key generated before, please use it here.
+# -- Encryption key for stored credentials. Leave empty to generate one on first start; it must never change after that.
 encryptionKey: ""
 
-# -- The name of an existing secret with encryption key. The secret must contain a key with the name N8N_ENCRYPTION_KEY.
+# -- Name of an existing secret holding `N8N_ENCRYPTION_KEY`. Overrides `encryptionKey`.
 existingEncryptionKeySecret: ""
 
 # For instance, the Schedule node uses it to know at what time the workflow should start. Find you timezone from here: https://momentjs.com/timezone/
@@ -902,50 +888,45 @@ timezone: "Europe/Berlin"
 # A locale identifier, compatible with the Accept-Language header. n8n doesn't support regional identifiers, such as de-AT.
 defaultLocale: en
 
-# -- Seconds n8n itself waits for its own graceful shutdown (finishing executions,
-# draining the task broker) before it force-exits.
+# -- Seconds n8n waits for its own shutdown (finishing executions, draining the task broker).
 # Maps to N8N_GRACEFUL_SHUTDOWN_TIMEOUT. Default is 30.
 gracefulShutdownTimeout: 30
 
-# -- Seconds Kubernetes waits for the pod to stop before it sends SIGKILL.
-# Leave empty to derive it from `gracefulShutdownTimeout` plus a 10 second buffer, so n8n's own
-# shutdown timer finishes first instead of the pod being killed mid-shutdown (which shows up as a
-# crash). Set this explicitly when running external task runners: their launcher drains for
-# `N8N_RUNNERS_GRACEFUL_SHUTDOWN_TIMEOUT` (30s) plus twice
-# `N8N_RUNNERS_SHUTDOWN_FORCE_KILL_MARGIN` (10s) on top of n8n's own timeout.
+# -- Seconds Kubernetes waits before SIGKILL. Empty derives `gracefulShutdownTimeout` + 10s.
+# Maps to the pod spec field of the same name; see Notes for the external runner case.
 terminationGracePeriodSeconds: ""
 
 # Security configurations for n8n. For more information see: https://docs.n8n.io/hosting/configuration/environment-variables/security/
 security:
-  # -- Whether to block access to the runner's environment from within Node.js code tasks.
+  # Whether to block access to the runner's environment from within Node.js code tasks.
   # Maps to N8N_BLOCK_ENV_ACCESS_IN_NODE. Default is false.
   blockEnvAccessInNode: false
-  # -- Whether to block access to sensitive n8n files from within code nodes.
+  # Whether to block access to sensitive n8n files from within code nodes.
   # Maps to N8N_BLOCK_FILE_ACCESS_TO_N8N_FILES. Default is true.
   blockFileAccessToN8nFiles: true
-  # -- Semicolon-separated list of additional directories that code nodes are allowed to access.
+  # Semicolon-separated list of additional directories that code nodes are allowed to access.
   # Maps to N8N_RESTRICT_FILE_ACCESS_TO. Leave empty to use defaults.
   restrictFileAccessTo: ""
   # -- Whether to use secure cookies (HTTPS only). Set to false in HTTP-only environments.
   # Maps to N8N_SECURE_COOKIE. Default is true.
   secureCookie: true
-  # -- Whether Azure Storage Shared Key credentials may target a custom endpoint (private endpoint, custom domain, Azurite).
-  # Azure sovereign clouds work without it. Maps to N8N_AZURE_STORAGE_CUSTOM_ENDPOINTS_ENABLED. Default is false.
+  # Allow Azure Shared Key credentials to target a custom endpoint (private endpoint, Azurite).
+  # Sovereign clouds work without it. Maps to N8N_AZURE_STORAGE_CUSTOM_ENDPOINTS_ENABLED.
   azureStorageCustomEndpoints: false
 
 # Workflow-related configurations. For more information see: https://docs.n8n.io/hosting/configuration/environment-variables/workflows/
 workflows:
-  # -- Number of workflows to activate in one batch during startup.
+  # Number of workflows to activate in one batch during startup.
   # Maps to N8N_WORKFLOW_ACTIVATION_BATCH_SIZE. Default is 1.
   activationBatchSize: 1
-  # -- Default caller policy for workflow-to-workflow calls.
+  # Default caller policy for workflow-to-workflow calls.
   # Allowed values: any | none | workflowsFromAList | workflowsFromSameOwner.
   # Maps to N8N_WORKFLOW_CALLER_POLICY_DEFAULT_OPTION. Default is workflowsFromSameOwner.
   callerPolicyDefaultOption: "workflowsFromSameOwner"
-  # -- Whether to disable the tags feature.
+  # Whether to disable the tags feature.
   # Maps to N8N_WORKFLOW_TAGS_DISABLED. Default is false.
   tagsDisabled: false
-  # -- Default name for new workflows.
+  # Default name for new workflows.
   # Maps to WORKFLOWS_DEFAULT_NAME. Default is "My workflow".
   defaultName: "My workflow"
 
@@ -957,13 +938,9 @@ aiAssistant:
   # The newer in-product n8n Assistant (Instance AI). See
   # https://github.com/n8n-io/n8n/blob/master/packages/%40n8n/instance-ai/docs/configuration.md
   instanceAi:
-    # -- Whether the n8n Assistant is on when no admin has turned it on or off in
-    # Settings > Assistant. Leave empty to keep n8n's default, which is on for self-hosted
-    # non-Enterprise plans and off on Enterprise. A choice saved in Settings > Assistant
-    # overrides this value.
-    # Set to false on air-gapped or privacy-sensitive clusters: the Assistant sends workflow data
-    # to a model provider unless N8N_INSTANCE_AI_MODEL_URL points at a local model.
-    # Maps to N8N_INSTANCE_AI_ENABLED.
+    # -- Default state of the n8n Assistant before an admin chooses in Settings > Assistant.
+    # Empty keeps n8n's default: on for self-hosted non-Enterprise, off on Enterprise.
+    # Maps to N8N_INSTANCE_AI_ENABLED. See Notes.
     enabled: ""
 
 # The service monitor configuration. Please refer to the following link for more information: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md
@@ -1009,23 +986,24 @@ serviceMonitor:
     apiPathLabel: false
     apiMethodLabel: false
     apiStatusCodeLabel: false
-    # -- Include Bull queue metrics. Also enables queueMetricsInterval.
+    # Include Bull queue metrics. Also enables queueMetricsInterval.
+    # Maps to N8N_METRICS_INCLUDE_QUEUE_METRICS.
     queueMetrics: false
-    # -- Interval in seconds between queue metric collections. Used when queueMetrics is enabled.
-    # Maps to N8N_METRICS_QUEUE_METRICS_INTERVAL.
+    # Seconds between queue metric collections. Used when queueMetrics is on
+    # (N8N_METRICS_QUEUE_METRICS_INTERVAL).
     queueMetricsInterval: 20
-    # -- Include encryption metrics.
+    # Include encryption metrics.
     encryptionMetrics: false
-    # -- Include metrics for the durable scheduler. Also enables schedulerInterval.
+    # Include durable scheduler metrics. Also enables schedulerInterval.
     schedulerMetrics: false
-    # -- Interval in seconds between scheduler metric collections. Used when schedulerMetrics is enabled.
-    # Maps to N8N_METRICS_SCHEDULER_INTERVAL.
+    # Seconds between scheduler metric collections. Used when schedulerMetrics is on
+    # (N8N_METRICS_SCHEDULER_INTERVAL).
     schedulerInterval: 20
-    # -- Include poll trigger metrics.
+    # Include poll trigger metrics.
     pollTriggerMetrics: false
-    # -- Include system task metrics.
+    # Include system task metrics.
     systemTaskMetrics: false
-    # -- Include SSRF protection metrics.
+    # Include SSRF protection metrics.
     ssrfMetrics: false
-    # -- Include DNS cache metrics (used by SSRF protection).
+    # Include DNS cache metrics (used by SSRF protection).
     dnsCacheMetrics: false

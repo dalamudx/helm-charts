@@ -42,3 +42,13 @@ helm uninstall my-n8n
 {{ template "chart.valuesTable" . }}
 
 *(See [values.yaml](https://github.com/dalamudx/helm-charts/raw/refs/heads/main/charts/n8n/values.yaml) for the full list of configuration options.)*
+
+## Notes
+
+- **Scheduler.** From n8n 2.45 the durable scheduler is on by default, so Schedule Trigger runs from a database queue instead of each instance's memory. Set `scheduler.enabled: false` to keep the in-memory scheduler.
+- **n8n Assistant (Instance AI).** From n8n 2.47 it is on by default for self-hosted non-Enterprise instances, and it sends workflow data to a model provider unless `N8N_INSTANCE_AI_MODEL_URL` points at a local model. Set `aiAssistant.instanceAi.enabled: false` to keep it off.
+- **Pod shutdown.** n8n force-exits after `gracefulShutdownTimeout` (30s). `terminationGracePeriodSeconds` defaults to that plus 10s, so n8n finishes first instead of the pod being killed mid-shutdown. With `taskRunners.mode: external`, set it to at least 60: the launcher drains on its own timers (30s + 2x10s) on top of n8n's.
+- **Worker shutdown.** `worker.suspendExecutionsOnShutdown: true` parks in-flight executions at the next node boundary so another worker resumes them, instead of losing them to the pod restart.
+- **Binary data.** `binaryData.mode` is empty by default, which lets n8n pick `filesystem` in regular mode and `database` in queue mode. `s3` needs `binaryData.s3.*`, `azure` needs `binaryData.azure.*` plus `security.azureStorageCustomEndpoints` for a custom endpoint.
+- **Tracing.** `otel.enabled` exports execution traces over OTLP to `otel.endpoint`; protocol, sample rate, node spans and header auth are set with the other `otel.*` keys in [values.yaml](https://github.com/dalamudx/helm-charts/raw/refs/heads/main/charts/n8n/values.yaml).
+- **Everything else.** Metrics toggles under `serviceMonitor.include.*`, public API rate limiting under `api.rateLimit.*`, workflow defaults under `workflows.*` and the Code node sandbox switches under `security.*` and `nodes.*` stay in [values.yaml](https://github.com/dalamudx/helm-charts/raw/refs/heads/main/charts/n8n/values.yaml).
