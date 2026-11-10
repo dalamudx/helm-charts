@@ -1318,6 +1318,27 @@ tests:
           path: data.N8N_AI_ASSISTANT_BASE_URL
           value: "https://ai-assistant.mydomain.com"
 
+  - it: ai-assistant-configmap should not set N8N_INSTANCE_AI_ENABLED by default
+    documentSelector:
+      path: metadata.name
+      value: n8n-ai-assistant-configmap
+    asserts:
+      - notExists:
+          path: data.N8N_INSTANCE_AI_ENABLED
+
+  - it: ai-assistant-configmap should set N8N_INSTANCE_AI_ENABLED when aiAssistant.instanceAi.enabled is set
+    set:
+      aiAssistant:
+        instanceAi:
+          enabled: false
+    documentSelector:
+      path: metadata.name
+      value: n8n-ai-assistant-configmap
+    asserts:
+      - equal:
+          path: data.N8N_INSTANCE_AI_ENABLED
+          value: "false"
+
   - it: public-api-configmap should not set N8N_PATH when n8nPath is the default /
     documentSelector:
       path: metadata.name

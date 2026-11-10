@@ -951,9 +951,20 @@ workflows:
 
 # AI Assistant configurations
 aiAssistant:
-  # -- Base URL for the n8n AI Assistant backend.
+  # -- Base URL for the legacy n8n AI Assistant backend.
   # Maps to N8N_AI_ASSISTANT_BASE_URL. Leave empty to use the default.
   baseUrl: ""
+  # The newer in-product n8n Assistant (Instance AI). See
+  # https://github.com/n8n-io/n8n/blob/master/packages/%40n8n/instance-ai/docs/configuration.md
+  instanceAi:
+    # -- Whether the n8n Assistant is on when no admin has turned it on or off in
+    # Settings > Assistant. Leave empty to keep n8n's default, which is on for self-hosted
+    # non-Enterprise plans and off on Enterprise. A choice saved in Settings > Assistant
+    # overrides this value.
+    # Set to false on air-gapped or privacy-sensitive clusters: the Assistant sends workflow data
+    # to a model provider unless N8N_INSTANCE_AI_MODEL_URL points at a local model.
+    # Maps to N8N_INSTANCE_AI_ENABLED.
+    enabled: ""
 
 # The service monitor configuration. Please refer to the following link for more information: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md
 serviceMonitor:

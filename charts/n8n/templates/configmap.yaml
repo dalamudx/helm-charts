@@ -312,6 +312,9 @@ data:
 {{- if .Values.aiAssistant.baseUrl }}
   N8N_AI_ASSISTANT_BASE_URL: {{ .Values.aiAssistant.baseUrl | quote }}
 {{- end }}
+{{- if ne (toString .Values.aiAssistant.instanceAi.enabled) "" }}
+  N8N_INSTANCE_AI_ENABLED: {{ .Values.aiAssistant.instanceAi.enabled | quote }}
+{{- end }}
 {{- if ne (toString .Values.scheduler.enabled) "" }}
 ---
 apiVersion: v1

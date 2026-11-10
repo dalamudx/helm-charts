@@ -42,6 +42,7 @@ helm uninstall my-n8n
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| aiAssistant.instanceAi.enabled | string | `""` | Whether the n8n Assistant is on when no admin has turned it on or off in Settings > Assistant. Leave empty to keep n8n's default, which is on for self-hosted non-Enterprise plans and off on Enterprise. A choice saved in Settings > Assistant overrides this value. Set to false on air-gapped or privacy-sensitive clusters: the Assistant sends workflow data to a model provider unless `N8N_INSTANCE_AI_MODEL_URL` points at a local model. Maps to N8N_INSTANCE_AI_ENABLED. |
 | api.rateLimit.enabled | bool | `false` | Per-API-key rate limiting for the public API (`/api/v1/*`). Maps to N8N_PUBLIC_API_RATE_LIMIT_ENABLED. The limits and windows keep n8n's defaults (1200 reads and 600 writes per key per minute); set them with `main.extraEnvVars`, `worker.extraEnvVars` or `global.extraEnvVars`. |
 | binaryData.azure.accountKey | string | `""` | Storage account key, used with the account name. |
 | binaryData.azure.accountName | string | `""` | Storage account name, used with an account key or managed identity. |
