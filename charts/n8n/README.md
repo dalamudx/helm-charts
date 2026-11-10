@@ -76,6 +76,7 @@ helm uninstall my-n8n
 | db.type | string | `"sqlite"` | Database engine. Valid values: `sqlite` \| `postgresdb`. |
 | encryptionKey | string | `""` | If you install n8n first time, you can keep this empty and it will be auto generated and never change again. If you already have a encryption key generated before, please use it here. |
 | existingEncryptionKeySecret | string | `""` | The name of an existing secret with encryption key. The secret must contain a key with the name N8N_ENCRYPTION_KEY. |
+| gracefulShutdownTimeout | int | `30` | Seconds n8n itself waits for its own graceful shutdown (finishing executions, draining the task broker) before it force-exits. Maps to N8N_GRACEFUL_SHUTDOWN_TIMEOUT. Default is 30. |
 | global.log.level | string | `"info"` | Log level. Options: `error` \| `warn` \| `info` \| `debug`. |
 | global.log.output | list | `["console"]` | Log output target. Options: `console` \| `file`. |
 | global.service.annotations | object | `{}` | Service annotations. |
@@ -111,6 +112,7 @@ helm uninstall my-n8n
 | serviceMonitor.include.systemTaskMetrics | bool | `false` | Include system task metrics. Maps to N8N_METRICS_INCLUDE_SYSTEM_TASK_METRICS. |
 | taskRunners.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | taskRunners.image.tag | string | `""` | Image tag (defaults to chart appVersion). |
+| terminationGracePeriodSeconds | string | `""` | Seconds Kubernetes waits for the pod to stop before it sends SIGKILL. Leave empty to derive it from `gracefulShutdownTimeout` plus a 10 second buffer, so n8n's own shutdown timer finishes first instead of the pod being killed mid-shutdown (which shows up as a crash). Set this explicitly when running external task runners: their launcher drains for `N8N_RUNNERS_GRACEFUL_SHUTDOWN_TIMEOUT` (30s) plus twice `N8N_RUNNERS_SHUTDOWN_FORCE_KILL_MARGIN` (10s) on top of n8n's own timeout. |
 | webhook.url | string | `""` | Webhook URL (include http/https schema). |
 | worker.suspendExecutionsOnShutdown | bool | `false` | Whether a worker that receives a shutdown signal suspends in-flight production executions at the next node boundary. Suspended executions are persisted as `waiting` and resumed on another worker, instead of running to completion (or being force-killed) on the exiting pod. Requires the pod's terminationGracePeriodSeconds to outlive `gracefulShutdownTimeout`. Maps to N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN. Default is false. Ships in n8n 2.43.7-2.43.8 and from 2.45.0, so the 2.44 series ignores it. |
 

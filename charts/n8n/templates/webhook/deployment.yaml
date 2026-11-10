@@ -44,6 +44,7 @@ spec:
         {{- end }}
     spec:
       {{- include "n8n.images.pullSecrets" (dict "images" (list .Values.webhook.image .Values.main.image) "global" .Values.global) | nindent 6 }}
+      terminationGracePeriodSeconds: {{ include "n8n.terminationGracePeriodSeconds" . }}
       serviceAccountName: {{ include "n8n.serviceAccountName" . }}
       securityContext:
         {{- toYaml (default .Values.global.podSecurityContext .Values.webhook.podSecurityContext) | nindent 8 }}

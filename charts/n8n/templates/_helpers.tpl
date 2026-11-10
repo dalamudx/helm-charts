@@ -368,6 +368,17 @@ Check if volumeMounts should be included to MCP webhook. If the context is not p
 {{- end -}}
 
 {{/*
+Seconds Kubernetes waits before SIGKILL. Defaults to gracefulShutdownTimeout + 10 so n8n's own
+shutdown timer (which force-exits at gracefulShutdownTimeout) fires first.
+*/}}
+{{- define "n8n.terminationGracePeriodSeconds" -}}
+{{- if ne (toString .Values.terminationGracePeriodSeconds) "" -}}
+{{- .Values.terminationGracePeriodSeconds -}}
+{{- else -}}
+{{- add (int .Values.gracefulShutdownTimeout) 10 -}}
+{{- end -}}
+{{- end -}}
+{{/*
 Standard environment variables
 */}}
 {{- define "n8n.env" -}}

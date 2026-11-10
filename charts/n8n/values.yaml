@@ -474,7 +474,8 @@ worker:
   # -- Whether a worker that receives a shutdown signal suspends in-flight production executions at
   # the next node boundary. Suspended executions are persisted as `waiting` and resumed on another
   # worker, instead of running to completion (or being force-killed) on the exiting pod.
-  # Requires the pod's terminationGracePeriodSeconds to outlive `gracefulShutdownTimeout`.
+  # Requires the pod's terminationGracePeriodSeconds to outlive `gracefulShutdownTimeout`,
+  # which the top-level `terminationGracePeriodSeconds` default derives automatically.
   # Maps to N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN. Default is false.
   # Ships in n8n 2.43.7-2.43.8 and from 2.45.0, so the 2.44 series ignores it.
   suspendExecutionsOnShutdown: false
@@ -901,8 +902,18 @@ timezone: "Europe/Berlin"
 # A locale identifier, compatible with the Accept-Language header. n8n doesn't support regional identifiers, such as de-AT.
 defaultLocale: en
 
-# graceful shutdown timeout in seconds
+# -- Seconds n8n itself waits for its own graceful shutdown (finishing executions,
+# draining the task broker) before it force-exits.
+# Maps to N8N_GRACEFUL_SHUTDOWN_TIMEOUT. Default is 30.
 gracefulShutdownTimeout: 30
+
+# -- Seconds Kubernetes waits for the pod to stop before it sends SIGKILL.
+# Leave empty to derive it from `gracefulShutdownTimeout` plus a 10 second buffer, so n8n's own
+# shutdown timer finishes first instead of the pod being killed mid-shutdown (which shows up as a
+# crash). Set this explicitly when running external task runners: their launcher drains for
+# `N8N_RUNNERS_GRACEFUL_SHUTDOWN_TIMEOUT` (30s) plus twice
+# `N8N_RUNNERS_SHUTDOWN_FORCE_KILL_MARGIN` (10s) on top of n8n's own timeout.
+terminationGracePeriodSeconds: ""
 
 # Security configurations for n8n. For more information see: https://docs.n8n.io/hosting/configuration/environment-variables/security/
 security:

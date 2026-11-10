@@ -1976,3 +1976,33 @@ tests:
         value: "requests,pandas"
       any: true
     template: main/deployment.yaml
+- it: should derive terminationGracePeriodSeconds from gracefulShutdownTimeout plus a buffer
+  asserts:
+  - equal:
+      path: spec.template.spec.terminationGracePeriodSeconds
+      value: 40
+    template: main/deployment.yaml
+- it: should follow gracefulShutdownTimeout when deriving terminationGracePeriodSeconds
+  set:
+    gracefulShutdownTimeout: 60
+  asserts:
+  - equal:
+      path: spec.template.spec.terminationGracePeriodSeconds
+      value: 70
+    template: main/deployment.yaml
+- it: should use an explicit terminationGracePeriodSeconds
+  set:
+    terminationGracePeriodSeconds: 120
+  asserts:
+  - equal:
+      path: spec.template.spec.terminationGracePeriodSeconds
+      value: 120
+    template: main/deployment.yaml
+- it: should use an explicit terminationGracePeriodSeconds of 0
+  set:
+    terminationGracePeriodSeconds: 0
+  asserts:
+  - equal:
+      path: spec.template.spec.terminationGracePeriodSeconds
+      value: 0
+    template: main/deployment.yaml

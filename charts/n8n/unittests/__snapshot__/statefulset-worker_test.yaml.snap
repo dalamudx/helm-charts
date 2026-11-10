@@ -427,6 +427,7 @@ should match snapshot of default values:
             fsGroup: 1000
             fsGroupChangePolicy: OnRootMismatch
           serviceAccountName: n8n
+          terminationGracePeriodSeconds: 40
       updateStrategy:
         type: RollingUpdate
       volumeClaimTemplates:
@@ -883,6 +884,7 @@ should match snapshot of postgres ssl certificate values:
             fsGroup: 1000
             fsGroupChangePolicy: OnRootMismatch
           serviceAccountName: n8n
+          terminationGracePeriodSeconds: 40
           volumes:
             - name: pg-ssl-ca
               secret:
