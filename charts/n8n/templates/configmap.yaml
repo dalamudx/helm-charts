@@ -110,6 +110,7 @@ data:
   N8N_PUBLIC_API_DISABLED: {{ not .Values.api.enabled | quote }}
   N8N_PUBLIC_API_ENDPOINT: {{ .Values.api.path | quote }}
   N8N_PUBLIC_API_SWAGGERUI_DISABLED: {{ not .Values.api.swagger.enabled | quote }}
+  N8N_PUBLIC_API_RATE_LIMIT_ENABLED: {{ .Values.api.rateLimit.enabled | quote }}
 {{- if and .Values.n8nPath (ne .Values.n8nPath "/") }}
   N8N_PATH: {{ .Values.n8nPath | quote }}
 {{- end }}

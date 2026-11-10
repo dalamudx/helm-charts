@@ -70,6 +70,7 @@ should match snapshot of default values:
     data:
       N8N_PUBLIC_API_DISABLED: "false"
       N8N_PUBLIC_API_ENDPOINT: api
+      N8N_PUBLIC_API_RATE_LIMIT_ENABLED: "false"
       N8N_PUBLIC_API_SWAGGERUI_DISABLED: "false"
     kind: ConfigMap
     metadata:
@@ -290,7 +291,7 @@ should match snapshot of default values:
       template:
         metadata:
           annotations:
-            checksum/config: 7090eeba275a1f523e24b90a3779236259fa6b172e1fe038a939c9817188df9f
+            checksum/config: 5d1e3af835afb75fd0f224c0df6eec5dc4a05e30154821208d7ed2509eb913f3
           labels:
             app.kubernetes.io/component: worker
             app.kubernetes.io/instance: n8n
@@ -502,6 +503,7 @@ should match snapshot of postgres ssl certificate values:
     data:
       N8N_PUBLIC_API_DISABLED: "false"
       N8N_PUBLIC_API_ENDPOINT: api
+      N8N_PUBLIC_API_RATE_LIMIT_ENABLED: "false"
       N8N_PUBLIC_API_SWAGGERUI_DISABLED: "false"
     kind: ConfigMap
     metadata:
@@ -722,7 +724,7 @@ should match snapshot of postgres ssl certificate values:
       template:
         metadata:
           annotations:
-            checksum/config: 35615e8f3eea0f56d2287174e26b7ad888ad43ff2bcfb88ddce5f1a900aa55fb
+            checksum/config: 49de699d42696b247a044735a09c067c6450c996e4e99f1a37f50aea44a0a9e4
           labels:
             app.kubernetes.io/component: worker
             app.kubernetes.io/instance: n8n
@@ -962,6 +964,7 @@ should match snapshot of worker persistence:
     data:
       N8N_PUBLIC_API_DISABLED: "false"
       N8N_PUBLIC_API_ENDPOINT: api
+      N8N_PUBLIC_API_RATE_LIMIT_ENABLED: "false"
       N8N_PUBLIC_API_SWAGGERUI_DISABLED: "false"
     kind: ConfigMap
     metadata:
@@ -1182,7 +1185,7 @@ should match snapshot of worker persistence:
       template:
         metadata:
           annotations:
-            checksum/config: 7090eeba275a1f523e24b90a3779236259fa6b172e1fe038a939c9817188df9f
+            checksum/config: 5d1e3af835afb75fd0f224c0df6eec5dc4a05e30154821208d7ed2509eb913f3
           labels:
             app.kubernetes.io/component: worker
             app.kubernetes.io/instance: n8n

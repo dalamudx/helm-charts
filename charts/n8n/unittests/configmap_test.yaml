@@ -518,6 +518,28 @@ tests:
           path: data.N8N_PUBLIC_API_SWAGGERUI_DISABLED
           value: "false"
 
+  - it: should disable public api rate limiting by default
+    documentSelector:
+      path: metadata.name
+      value: n8n-public-api-configmap
+    asserts:
+      - equal:
+          path: data.N8N_PUBLIC_API_RATE_LIMIT_ENABLED
+          value: "false"
+
+  - it: should enable public api rate limiting when api.rateLimit.enabled is true
+    set:
+      api:
+        rateLimit:
+          enabled: true
+    documentSelector:
+      path: metadata.name
+      value: n8n-public-api-configmap
+    asserts:
+      - equal:
+          path: data.N8N_PUBLIC_API_RATE_LIMIT_ENABLED
+          value: "true"
+
   - it: should set execution mode to queue when db type set to postgresdb and worker.mode is queue
     set:
       db:

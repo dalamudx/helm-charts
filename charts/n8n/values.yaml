@@ -321,6 +321,12 @@ api:
   path: api
   swagger:
     enabled: true
+  # Per-API-key rate limiting for the public API (`/api/v1/*`). Maps to
+  # N8N_PUBLIC_API_RATE_LIMIT_ENABLED. The limits and windows themselves have sane defaults
+  # (1200 reads and 600 writes per key per minute); set them with `main.extraEnvVars`,
+  # `worker.extraEnvVars` or `global.extraEnvVars` if you need different ones.
+  rateLimit:
+    enabled: false
 
 # n8n enterprise license configurations
 license:
@@ -470,8 +476,7 @@ worker:
   # worker, instead of running to completion (or being force-killed) on the exiting pod.
   # Requires the pod's terminationGracePeriodSeconds to outlive `gracefulShutdownTimeout`.
   # Maps to N8N_WORKER_SUSPEND_EXECUTIONS_ON_SHUTDOWN. Default is false.
-  # Ships in n8n 2.43.7+ and again from 2.45.0; the 2.44 series does not include it, so the
-  # variable is ignored there.
+  # Ships in n8n 2.43.7-2.43.8 and from 2.45.0, so the 2.44 series ignores it.
   suspendExecutionsOnShutdown: false
 
   autoscaling:
@@ -875,9 +880,10 @@ workflowHistory:
 # The durable scheduler, which runs time-based workflows (Schedule Trigger) from a
 # database-backed queue instead of each instance's memory.
 scheduler:
-  # -- Enable the durable scheduler. Leave empty to use n8n's default (off before 2.45, on from 2.45).
-  # Matters for multi-main and queue-mode setups, where the in-memory scheduler fires each
-  # schedule once per instance. Maps to N8N_SCHEDULER_ENABLED.
+  # -- Enable the durable scheduler. Leave empty to use n8n's default: off before 2.45, on from 2.45.
+  # Set to false to keep the in-memory scheduler on 2.45+, where it is no longer possible to
+  # opt out through a feature flag. Matters for multi-main and queue-mode setups, where the
+  # in-memory scheduler fires each schedule once per instance. Maps to N8N_SCHEDULER_ENABLED.
   enabled: ""
 # -- The base path under which n8n runs. Useful for serving n8n at a sub-path (e.g. /n8n/). Include a trailing slash.
 # Maps to N8N_PATH environment variable.
