@@ -83,6 +83,7 @@ helm uninstall my-n8n
 | global.service.name | string | `"http"` | Service port name. |
 | global.service.port | int | `5678` | Service port. |
 | global.service.type | string | `"ClusterIP"` | Service type (ClusterIP, NodePort, LoadBalancer). |
+| nodes.blockDeprecated | bool | `true` | Whether workflows may add or change deprecated nodes and node versions. Saved workflows that already contain one keep running, and removing it or moving to a supported version is allowed. Set to false to import older backups that contain deprecated nodes. Maps to N8N_DEPRECATED_NODES_BLOCK. Default is true. |
 | nodes.external.allowAll | bool | `false` | Allow all external npm packages in Code node. |
 | otel.enabled | bool | `false` | Whether to export execution traces over OTLP. Maps to N8N_OTEL_ENABLED. Default is false. |
 | otel.endpoint | string | `"http://localhost:4318"` | OTLP collector endpoint. Maps to N8N_OTEL_EXPORTER_OTLP_ENDPOINT. |
@@ -98,6 +99,15 @@ helm uninstall my-n8n
 | otel.tracingPath | string | `"/v1/traces"` | OTLP traces path. Maps to N8N_OTEL_EXPORTER_OTLP_TRACING_PATH. |
 | scheduler.enabled | string | `""` | Enable the durable scheduler. Leave empty to use n8n's default (off before 2.45, on from 2.45). Matters for multi-main and queue-mode setups, where the in-memory scheduler fires each schedule once per instance. Maps to N8N_SCHEDULER_ENABLED. |
 | security.azureStorageCustomEndpoints | bool | `false` | Whether Azure Storage Shared Key credentials may target a custom endpoint (private endpoint, custom domain, Azurite). Azure sovereign clouds work without it. Maps to N8N_AZURE_STORAGE_CUSTOM_ENDPOINTS_ENABLED. Default is false. |
+| serviceMonitor.include.dnsCacheMetrics | bool | `false` | Include DNS cache metrics (used by SSRF protection). Maps to N8N_METRICS_INCLUDE_DNS_CACHE_METRICS. |
+| serviceMonitor.include.encryptionMetrics | bool | `false` | Include encryption metrics. Maps to N8N_METRICS_INCLUDE_ENCRYPTION_METRICS. |
+| serviceMonitor.include.pollTriggerMetrics | bool | `false` | Include poll trigger metrics. Maps to N8N_METRICS_INCLUDE_POLL_TRIGGER_METRICS. |
+| serviceMonitor.include.queueMetrics | bool | `false` | Include Bull queue metrics. Also enables queueMetricsInterval. Maps to N8N_METRICS_INCLUDE_QUEUE_METRICS. |
+| serviceMonitor.include.queueMetricsInterval | int | `20` | Interval in seconds between queue metric collections. Only used when queueMetrics is enabled. Maps to N8N_METRICS_QUEUE_METRICS_INTERVAL. |
+| serviceMonitor.include.schedulerInterval | int | `20` | Interval in seconds between scheduler metric collections. Only used when schedulerMetrics is enabled. Maps to N8N_METRICS_SCHEDULER_INTERVAL. |
+| serviceMonitor.include.schedulerMetrics | bool | `false` | Include metrics for the durable scheduler. Also enables schedulerInterval. Maps to N8N_METRICS_INCLUDE_SCHEDULER_METRICS. |
+| serviceMonitor.include.ssrfMetrics | bool | `false` | Include SSRF protection metrics. Maps to N8N_METRICS_INCLUDE_SSRF_METRICS. |
+| serviceMonitor.include.systemTaskMetrics | bool | `false` | Include system task metrics. Maps to N8N_METRICS_INCLUDE_SYSTEM_TASK_METRICS. |
 | taskRunners.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | taskRunners.image.tag | string | `""` | Image tag (defaults to chart appVersion). |
 | webhook.url | string | `""` | Webhook URL (include http/https schema). |

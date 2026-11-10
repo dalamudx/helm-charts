@@ -72,6 +72,11 @@ commonAnnotations: {}
 
 # Node configurations for built-in and external npm packages
 nodes:
+  # -- Whether workflows may add or change deprecated nodes and node versions. Saved workflows that
+  # already contain one keep running, and removing it or moving to a supported version is allowed.
+  # Set to false to import older backups that contain deprecated nodes.
+  # Maps to N8N_DEPRECATED_NODES_BLOCK. Default is true.
+  blockDeprecated: true
   # Enable built-in node functions (e.g., HTTP Request, Code Node, etc.)
   builtin:
     # Enable built-in modules for the Code node
@@ -968,5 +973,23 @@ serviceMonitor:
     apiPathLabel: false
     apiMethodLabel: false
     apiStatusCodeLabel: false
+    # -- Include Bull queue metrics. Also enables queueMetricsInterval.
     queueMetrics: false
+    # -- Interval in seconds between queue metric collections. Used when queueMetrics is enabled.
+    # Maps to N8N_METRICS_QUEUE_METRICS_INTERVAL.
+    queueMetricsInterval: 20
+    # -- Include encryption metrics.
     encryptionMetrics: false
+    # -- Include metrics for the durable scheduler. Also enables schedulerInterval.
+    schedulerMetrics: false
+    # -- Interval in seconds between scheduler metric collections. Used when schedulerMetrics is enabled.
+    # Maps to N8N_METRICS_SCHEDULER_INTERVAL.
+    schedulerInterval: 20
+    # -- Include poll trigger metrics.
+    pollTriggerMetrics: false
+    # -- Include system task metrics.
+    systemTaskMetrics: false
+    # -- Include SSRF protection metrics.
+    ssrfMetrics: false
+    # -- Include DNS cache metrics (used by SSRF protection).
+    dnsCacheMetrics: false

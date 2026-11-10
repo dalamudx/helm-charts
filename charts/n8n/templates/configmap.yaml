@@ -191,6 +191,17 @@ data:
   N8N_METRICS_INCLUDE_API_STATUS_CODE_LABEL: {{ .Values.serviceMonitor.include.apiStatusCodeLabel | quote }}
   N8N_METRICS_INCLUDE_QUEUE_METRICS: {{ .Values.serviceMonitor.include.queueMetrics | quote }}
   N8N_METRICS_INCLUDE_ENCRYPTION_METRICS: {{ .Values.serviceMonitor.include.encryptionMetrics | quote }}
+  {{- if .Values.serviceMonitor.include.queueMetrics }}
+  N8N_METRICS_QUEUE_METRICS_INTERVAL: {{ .Values.serviceMonitor.include.queueMetricsInterval | quote }}
+  {{- end }}
+  N8N_METRICS_INCLUDE_SCHEDULER_METRICS: {{ .Values.serviceMonitor.include.schedulerMetrics | quote }}
+  {{- if .Values.serviceMonitor.include.schedulerMetrics }}
+  N8N_METRICS_SCHEDULER_INTERVAL: {{ .Values.serviceMonitor.include.schedulerInterval | quote }}
+  {{- end }}
+  N8N_METRICS_INCLUDE_POLL_TRIGGER_METRICS: {{ .Values.serviceMonitor.include.pollTriggerMetrics | quote }}
+  N8N_METRICS_INCLUDE_SYSTEM_TASK_METRICS: {{ .Values.serviceMonitor.include.systemTaskMetrics | quote }}
+  N8N_METRICS_INCLUDE_SSRF_METRICS: {{ .Values.serviceMonitor.include.ssrfMetrics | quote }}
+  N8N_METRICS_INCLUDE_DNS_CACHE_METRICS: {{ .Values.serviceMonitor.include.dnsCacheMetrics | quote }}
 {{- if eq .Values.taskRunners.mode "external" }}
 ---
 apiVersion: v1
@@ -286,6 +297,7 @@ data:
   N8N_WORKFLOW_ACTIVATION_BATCH_SIZE: {{ .Values.workflows.activationBatchSize | quote }}
   N8N_WORKFLOW_CALLER_POLICY_DEFAULT_OPTION: {{ .Values.workflows.callerPolicyDefaultOption | quote }}
   N8N_WORKFLOW_TAGS_DISABLED: {{ .Values.workflows.tagsDisabled | quote }}
+  N8N_DEPRECATED_NODES_BLOCK: {{ .Values.nodes.blockDeprecated | quote }}
   WORKFLOWS_DEFAULT_NAME: {{ .Values.workflows.defaultName | quote }}
 ---
 apiVersion: v1

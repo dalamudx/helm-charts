@@ -114,10 +114,15 @@ should match snapshot of default values:
       N8N_METRICS_INCLUDE_CACHE_METRICS: "false"
       N8N_METRICS_INCLUDE_CREDENTIAL_TYPE_LABEL: "false"
       N8N_METRICS_INCLUDE_DEFAULT_METRICS: "true"
+      N8N_METRICS_INCLUDE_DNS_CACHE_METRICS: "false"
       N8N_METRICS_INCLUDE_ENCRYPTION_METRICS: "false"
       N8N_METRICS_INCLUDE_MESSAGE_EVENT_BUS_METRICS: "false"
       N8N_METRICS_INCLUDE_NODE_TYPE_LABEL: "false"
+      N8N_METRICS_INCLUDE_POLL_TRIGGER_METRICS: "false"
       N8N_METRICS_INCLUDE_QUEUE_METRICS: "false"
+      N8N_METRICS_INCLUDE_SCHEDULER_METRICS: "false"
+      N8N_METRICS_INCLUDE_SSRF_METRICS: "false"
+      N8N_METRICS_INCLUDE_SYSTEM_TASK_METRICS: "false"
       N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL: "false"
       N8N_METRICS_PREFIX: n8n_
     kind: ConfigMap
@@ -160,6 +165,7 @@ should match snapshot of default values:
   11: |
     apiVersion: v1
     data:
+      N8N_DEPRECATED_NODES_BLOCK: "true"
       N8N_WORKFLOW_ACTIVATION_BATCH_SIZE: "1"
       N8N_WORKFLOW_CALLER_POLICY_DEFAULT_OPTION: workflowsFromSameOwner
       N8N_WORKFLOW_TAGS_DISABLED: "false"
@@ -212,7 +218,7 @@ should match snapshot of default values:
       template:
         metadata:
           annotations:
-            checksum/config: 5a834943e77aa8b6f6a0d51fcd057eeeded04f8cab9ff7f3074d7dcd6012625d
+            checksum/config: 2d338bb61c50b09776f27e33921c14f8888e52c66d8e1cc5024c205fd6c4b469
           labels:
             app.kubernetes.io/component: main
             app.kubernetes.io/instance: n8n
@@ -436,10 +442,15 @@ should match snapshot of main persistence:
       N8N_METRICS_INCLUDE_CACHE_METRICS: "false"
       N8N_METRICS_INCLUDE_CREDENTIAL_TYPE_LABEL: "false"
       N8N_METRICS_INCLUDE_DEFAULT_METRICS: "true"
+      N8N_METRICS_INCLUDE_DNS_CACHE_METRICS: "false"
       N8N_METRICS_INCLUDE_ENCRYPTION_METRICS: "false"
       N8N_METRICS_INCLUDE_MESSAGE_EVENT_BUS_METRICS: "false"
       N8N_METRICS_INCLUDE_NODE_TYPE_LABEL: "false"
+      N8N_METRICS_INCLUDE_POLL_TRIGGER_METRICS: "false"
       N8N_METRICS_INCLUDE_QUEUE_METRICS: "false"
+      N8N_METRICS_INCLUDE_SCHEDULER_METRICS: "false"
+      N8N_METRICS_INCLUDE_SSRF_METRICS: "false"
+      N8N_METRICS_INCLUDE_SYSTEM_TASK_METRICS: "false"
       N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL: "false"
       N8N_METRICS_PREFIX: n8n_
     kind: ConfigMap
@@ -482,6 +493,7 @@ should match snapshot of main persistence:
   11: |
     apiVersion: v1
     data:
+      N8N_DEPRECATED_NODES_BLOCK: "true"
       N8N_WORKFLOW_ACTIVATION_BATCH_SIZE: "1"
       N8N_WORKFLOW_CALLER_POLICY_DEFAULT_OPTION: workflowsFromSameOwner
       N8N_WORKFLOW_TAGS_DISABLED: "false"
@@ -534,7 +546,7 @@ should match snapshot of main persistence:
       template:
         metadata:
           annotations:
-            checksum/config: 5a834943e77aa8b6f6a0d51fcd057eeeded04f8cab9ff7f3074d7dcd6012625d
+            checksum/config: 2d338bb61c50b09776f27e33921c14f8888e52c66d8e1cc5024c205fd6c4b469
           labels:
             app.kubernetes.io/component: main
             app.kubernetes.io/instance: n8n
@@ -766,10 +778,15 @@ should match snapshot of main persistence with multiple main node and mode read 
       N8N_METRICS_INCLUDE_CACHE_METRICS: "false"
       N8N_METRICS_INCLUDE_CREDENTIAL_TYPE_LABEL: "false"
       N8N_METRICS_INCLUDE_DEFAULT_METRICS: "true"
+      N8N_METRICS_INCLUDE_DNS_CACHE_METRICS: "false"
       N8N_METRICS_INCLUDE_ENCRYPTION_METRICS: "false"
       N8N_METRICS_INCLUDE_MESSAGE_EVENT_BUS_METRICS: "false"
       N8N_METRICS_INCLUDE_NODE_TYPE_LABEL: "false"
+      N8N_METRICS_INCLUDE_POLL_TRIGGER_METRICS: "false"
       N8N_METRICS_INCLUDE_QUEUE_METRICS: "false"
+      N8N_METRICS_INCLUDE_SCHEDULER_METRICS: "false"
+      N8N_METRICS_INCLUDE_SSRF_METRICS: "false"
+      N8N_METRICS_INCLUDE_SYSTEM_TASK_METRICS: "false"
       N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL: "false"
       N8N_METRICS_PREFIX: n8n_
     kind: ConfigMap
@@ -812,6 +829,7 @@ should match snapshot of main persistence with multiple main node and mode read 
   11: |
     apiVersion: v1
     data:
+      N8N_DEPRECATED_NODES_BLOCK: "true"
       N8N_WORKFLOW_ACTIVATION_BATCH_SIZE: "1"
       N8N_WORKFLOW_CALLER_POLICY_DEFAULT_OPTION: workflowsFromSameOwner
       N8N_WORKFLOW_TAGS_DISABLED: "false"
@@ -864,7 +882,7 @@ should match snapshot of main persistence with multiple main node and mode read 
       template:
         metadata:
           annotations:
-            checksum/config: 5a834943e77aa8b6f6a0d51fcd057eeeded04f8cab9ff7f3074d7dcd6012625d
+            checksum/config: 2d338bb61c50b09776f27e33921c14f8888e52c66d8e1cc5024c205fd6c4b469
           labels:
             app.kubernetes.io/component: main
             app.kubernetes.io/instance: n8n
@@ -1108,10 +1126,15 @@ should match snapshot of postgres ssl certificate values:
       N8N_METRICS_INCLUDE_CACHE_METRICS: "false"
       N8N_METRICS_INCLUDE_CREDENTIAL_TYPE_LABEL: "false"
       N8N_METRICS_INCLUDE_DEFAULT_METRICS: "true"
+      N8N_METRICS_INCLUDE_DNS_CACHE_METRICS: "false"
       N8N_METRICS_INCLUDE_ENCRYPTION_METRICS: "false"
       N8N_METRICS_INCLUDE_MESSAGE_EVENT_BUS_METRICS: "false"
       N8N_METRICS_INCLUDE_NODE_TYPE_LABEL: "false"
+      N8N_METRICS_INCLUDE_POLL_TRIGGER_METRICS: "false"
       N8N_METRICS_INCLUDE_QUEUE_METRICS: "false"
+      N8N_METRICS_INCLUDE_SCHEDULER_METRICS: "false"
+      N8N_METRICS_INCLUDE_SSRF_METRICS: "false"
+      N8N_METRICS_INCLUDE_SYSTEM_TASK_METRICS: "false"
       N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL: "false"
       N8N_METRICS_PREFIX: n8n_
     kind: ConfigMap
@@ -1154,6 +1177,7 @@ should match snapshot of postgres ssl certificate values:
   11: |
     apiVersion: v1
     data:
+      N8N_DEPRECATED_NODES_BLOCK: "true"
       N8N_WORKFLOW_ACTIVATION_BATCH_SIZE: "1"
       N8N_WORKFLOW_CALLER_POLICY_DEFAULT_OPTION: workflowsFromSameOwner
       N8N_WORKFLOW_TAGS_DISABLED: "false"
@@ -1206,7 +1230,7 @@ should match snapshot of postgres ssl certificate values:
       template:
         metadata:
           annotations:
-            checksum/config: c4efed5a2e4ef243ca6ce0be022e2d5469ed0704b0830a887436fc44e3c0d617
+            checksum/config: 7900fe19607c23718dab861cc4581baf32cf192342fa7bd988d9819bb7734571
           labels:
             app.kubernetes.io/component: main
             app.kubernetes.io/instance: n8n

@@ -1405,3 +1405,82 @@ tests:
       - equal:
           path: data.N8N_METRICS_INCLUDE_ENCRYPTION_METRICS
           value: "true"
+
+  - it: should set the documented metrics toggles in the metrics configmap
+    set:
+      serviceMonitor:
+        include:
+          schedulerMetrics: true
+          pollTriggerMetrics: true
+          systemTaskMetrics: true
+          ssrfMetrics: true
+          dnsCacheMetrics: true
+    documentSelector:
+      path: metadata.name
+      value: n8n-metrics-configmap
+    asserts:
+      - equal:
+          path: data.N8N_METRICS_INCLUDE_SCHEDULER_METRICS
+          value: "true"
+      - equal:
+          path: data.N8N_METRICS_INCLUDE_POLL_TRIGGER_METRICS
+          value: "true"
+      - equal:
+          path: data.N8N_METRICS_INCLUDE_SYSTEM_TASK_METRICS
+          value: "true"
+      - equal:
+          path: data.N8N_METRICS_INCLUDE_SSRF_METRICS
+          value: "true"
+      - equal:
+          path: data.N8N_METRICS_INCLUDE_DNS_CACHE_METRICS
+          value: "true"
+
+  - it: should not set metrics intervals unless the matching metrics are enabled
+    documentSelector:
+      path: metadata.name
+      value: n8n-metrics-configmap
+    asserts:
+      - notExists:
+          path: data.N8N_METRICS_QUEUE_METRICS_INTERVAL
+      - notExists:
+          path: data.N8N_METRICS_SCHEDULER_INTERVAL
+
+  - it: should set metrics intervals when the matching metrics are enabled
+    set:
+      serviceMonitor:
+        include:
+          queueMetrics: true
+          queueMetricsInterval: 5
+          schedulerMetrics: true
+          schedulerInterval: 7
+    documentSelector:
+      path: metadata.name
+      value: n8n-metrics-configmap
+    asserts:
+      - equal:
+          path: data.N8N_METRICS_QUEUE_METRICS_INTERVAL
+          value: "5"
+      - equal:
+          path: data.N8N_METRICS_SCHEDULER_INTERVAL
+          value: "7"
+
+  - it: workflows-configmap should set N8N_DEPRECATED_NODES_BLOCK to true by default
+    documentSelector:
+      path: metadata.name
+      value: n8n-workflows-configmap
+    asserts:
+      - equal:
+          path: data.N8N_DEPRECATED_NODES_BLOCK
+          value: "true"
+
+  - it: workflows-configmap should allow deprecated nodes when nodes.blockDeprecated is false
+    set:
+      nodes:
+        blockDeprecated: false
+    documentSelector:
+      path: metadata.name
+      value: n8n-workflows-configmap
+    asserts:
+      - equal:
+          path: data.N8N_DEPRECATED_NODES_BLOCK
+          value: "false"
