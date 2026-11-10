@@ -425,7 +425,7 @@ Standard environment variables
 {{- end }}
 {{- end }}
 {{- if .Values.webhook.url }}
-- name: WEBHOOK_URL
+- name: N8N_WEBHOOK_URL
   value: {{ .Values.webhook.url | quote }}
 {{- end }}
 
@@ -433,7 +433,7 @@ Standard environment variables
 - name: N8N_MULTI_MAIN_SETUP_ENABLED
   value: "true"
 {{- end }}
-{{- if has "s3" .Values.binaryData.availableModes }}
+{{- if eq .Values.binaryData.mode "s3" }}
 - name: N8N_EXTERNAL_STORAGE_S3_ACCESS_KEY
   valueFrom:
     secretKeyRef:
@@ -492,9 +492,9 @@ Runners environment variables (for internal and external task runners)
 - name: N8N_BLOCK_RUNNER_ENV_ACCESS
   value: {{ .Values.taskRunners.blockEnvAccess | quote }}
 {{- end }}
-{{- if hasKey .Values.taskRunners "allowPrototypeMutation" }}
-- name: N8N_RUNNERS_ALLOW_PROTOTYPE_MUTATION
-  value: {{ .Values.taskRunners.allowPrototypeMutation | quote }}
+{{- if hasKey .Values.taskRunners "insecureMode" }}
+- name: N8N_RUNNERS_INSECURE_MODE
+  value: {{ .Values.taskRunners.insecureMode | quote }}
 {{- end }}
 {{- end -}}
 

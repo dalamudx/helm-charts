@@ -1200,9 +1200,6 @@ tests:
     is not enabled
   set:
     binaryData:
-      availableModes:
-      - filesystem
-      - s3
       mode: s3
       s3:
         accessKey: fake-access-key-id
@@ -1220,9 +1217,6 @@ tests:
     minio is not enabled
   set:
     binaryData:
-      availableModes:
-      - filesystem
-      - s3
       mode: s3
       s3:
         existingSecret: fake-existing-secret
@@ -1240,9 +1234,6 @@ tests:
     minio is not enabled
   set:
     binaryData:
-      availableModes:
-      - filesystem
-      - s3
       mode: s3
       s3:
         accessSecret: fake-secret-access-key
@@ -1260,9 +1251,6 @@ tests:
     s3 and minio is enabled and users are not set
   set:
     binaryData:
-      availableModes:
-      - filesystem
-      - s3
       mode: s3
       users: []
   asserts:
@@ -1279,9 +1267,6 @@ tests:
     s3 and minio is not enabled
   set:
     binaryData:
-      availableModes:
-      - filesystem
-      - s3
       mode: s3
       s3:
         existingSecret: fake-existing-secret
@@ -1893,7 +1878,7 @@ tests:
       mode: internal
       maxPayload: "200000000"
       blockEnvAccess: false
-      allowPrototypeMutation: true
+      insecureMode: true
     nodes:
       builtin:
         pythonStdlibAllow: "math,json"
@@ -1939,7 +1924,7 @@ tests:
   - contains:
       path: spec.template.spec.containers[?(@.name == "n8n-worker")].env
       content:
-        name: N8N_RUNNERS_ALLOW_PROTOTYPE_MUTATION
+        name: N8N_RUNNERS_INSECURE_MODE
         value: "true"
       any: true
     template: worker/statefulset.yaml

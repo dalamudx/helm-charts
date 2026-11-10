@@ -106,7 +106,6 @@ should match snapshot of postgres ssl certificate values:
   7: |
     apiVersion: v1
     data:
-      N8N_WORKFLOW_HISTORY_ENABLED: "true"
       N8N_WORKFLOW_HISTORY_PRUNE_TIME: "336"
     kind: ConfigMap
     metadata:
@@ -160,8 +159,7 @@ should match snapshot of postgres ssl certificate values:
       name: n8n-metrics-configmap
   10: |
     apiVersion: v1
-    data:
-      N8N_DEFAULT_BINARY_DATA_MODE: default
+    data: null
     kind: ConfigMap
     metadata:
       labels:
@@ -189,7 +187,6 @@ should match snapshot of postgres ssl certificate values:
   12: |
     apiVersion: v1
     data:
-      N8N_ONBOARDING_FLOW_DISABLED: "false"
       N8N_WORKFLOW_ACTIVATION_BATCH_SIZE: "1"
       N8N_WORKFLOW_CALLER_POLICY_DEFAULT_OPTION: workflowsFromSameOwner
       N8N_WORKFLOW_TAGS_DISABLED: "false"
@@ -242,7 +239,7 @@ should match snapshot of postgres ssl certificate values:
       template:
         metadata:
           annotations:
-            checksum/config: cc197e87bd88697f819bc19ac4ef4848a3f63bbc254f27c13250141b085daaa1
+            checksum/config: 301f3f606b1ce5a6f657f60402e92abd955c90ff4a6893542ae13735734f18e8
           labels:
             app.kubernetes.io/component: webhook
             app.kubernetes.io/instance: n8n
@@ -297,7 +294,7 @@ should match snapshot of postgres ssl certificate values:
                   value: "1073741824"
                 - name: N8N_BLOCK_RUNNER_ENV_ACCESS
                   value: "true"
-                - name: N8N_RUNNERS_ALLOW_PROTOTYPE_MUTATION
+                - name: N8N_RUNNERS_INSECURE_MODE
                   value: "false"
                 - name: N8N_DISABLE_UI
                   value: "true"

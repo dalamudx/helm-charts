@@ -42,12 +42,13 @@ helm uninstall my-n8n
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| binaryData.mode | string | `"default"` | Binary data storage mode. Valid values: `default` (in-memory) \| `filesystem` \| `s3`. |
+| binaryData.mode | string | `""` | Binary data storage mode. Valid values: `default` (in-memory, deprecated) \| `filesystem` \| `s3` \| `database`. Leave empty to let n8n choose: `filesystem` in regular mode, `database` in queue mode. |
 | binaryData.s3.accessKey | string | `""` | S3 access key. |
 | binaryData.s3.accessSecret | string | `""` | S3 access secret. |
 | binaryData.s3.bucketName | string | `""` | S3 bucket name. |
 | binaryData.s3.bucketRegion | string | `"us-east-1"` | S3 bucket region. |
 | binaryData.s3.existingSecret | string | `""` | Existing secret for S3 credentials (keys: `access-key-id`, `secret-access-key`). |
+| binaryData.s3.forcePathStyle | bool | `true` | Use path-style addressing for S3 requests (needed for MinIO and most S3-compatible stores). Maps to N8N_EXTERNAL_STORAGE_S3_FORCE_PATH_STYLE. Default is true. |
 | binaryData.s3.host | string | `""` | S3-compatible storage host. |
 | db.postgresdb.database | string | `"n8n"` | PostgreSQL database name. |
 | db.postgresdb.existingSecret | string | `""` | Existing secret with `postgres-password` key. Overrides `db.postgresdb.password`. |

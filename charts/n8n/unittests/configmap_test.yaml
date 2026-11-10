@@ -748,17 +748,6 @@ tests:
           path: data.QUEUE_BULL_REDIS_CLUSTER_NODES
           value: "redis-node1:4321,redis2:8765,host-3:9012"
 
-  - it: should set workflow history enabled when workflowHistory.enabled is true
-    set:
-      workflowHistory:
-        enabled: true
-    documentSelector:
-      path: metadata.name
-      value: n8n-workflow-history-configmap
-    asserts:
-      - equal:
-          path: data.N8N_WORKFLOW_HISTORY_ENABLED
-          value: "true"
 
   - it: should set workflow history prune time when workflowHistory.pruneTime is set
     set:
@@ -981,7 +970,6 @@ tests:
         enabled: true
         autoNenew:
           enabled: false
-          offsetInHours: 1
         serverUrl: "https://license.mydomain.com"
         tenantId: 999
     documentSelector:
@@ -991,9 +979,6 @@ tests:
       - equal:
           path: data.N8N_LICENSE_AUTO_RENEW_ENABLED
           value: "false"
-      - equal:
-          path: data.N8N_LICENSE_AUTO_RENEW_OFFSET
-          value: "3600"
       - equal:
           path: data.N8N_LICENSE_SERVER_URL
           value: "https://license.mydomain.com"
@@ -1013,42 +998,23 @@ tests:
           path: data.N8N_DEFAULT_BINARY_DATA_MODE
           value: s3
 
-  - it: should set available binary data modes from binaryData.availableModes when binaryData.mode is set
+  - it: should set N8N_STORAGE_PATH from binaryData.localStoragePath when binaryData.mode is filesystem
     set:
       binaryData:
-        mode: default
-        availableModes:
-          - filesystem
-          - s3
+        mode: filesystem
+        localStoragePath: /home/node/.n8n/storage
     documentSelector:
       path: metadata.name
       value: n8n-binary-data-configmap
     asserts:
       - equal:
-          path: data.N8N_AVAILABLE_BINARY_DATA_MODES
-          value: filesystem,s3
+          path: data.N8N_STORAGE_PATH
+          value: /home/node/.n8n/storage
 
-  - it: should set binary data storage path from binaryData.localStoragePath when binaryData.availableModes includes filesystem
-    set:
-      binaryData:
-        mode: default
-        availableModes:
-          - filesystem
-        localStoragePath: /home/node/.n8n/binaryData
-    documentSelector:
-      path: metadata.name
-      value: n8n-binary-data-configmap
-    asserts:
-      - equal:
-          path: data.N8N_BINARY_DATA_STORAGE_PATH
-          value: /home/node/.n8n/binaryData
-
-  - it: should set s3 configurations from binaryData.s3 with any region format when binaryData.availableModes includes s3
+  - it: should set s3 configurations from binaryData.s3 with any region format
     set:
       binaryData:
         mode: s3
-        availableModes:
-          - s3
         s3:
           host: s3.mydomain.com
           bucketName: mybucket
@@ -1067,12 +1033,10 @@ tests:
           path: data.N8N_EXTERNAL_STORAGE_S3_BUCKET_REGION
           value: anyregion
 
-  - it: should set s3 configurations from binaryData.s3 when binaryData.availableModes includes s3
+  - it: should set s3 configurations from binaryData.s3
     set:
       binaryData:
         mode: s3
-        availableModes:
-          - s3
         s3:
           host: s3.mydomain.com
           bucketName: mybucket
@@ -1209,27 +1173,6 @@ tests:
       - equal:
           path: data.N8N_RESTRICT_FILE_ACCESS_TO
           value: "/data/uploads;/tmp"
-
-  - it: workflows-configmap should set N8N_ONBOARDING_FLOW_DISABLED to false by default
-    documentSelector:
-      path: metadata.name
-      value: n8n-workflows-configmap
-    asserts:
-      - equal:
-          path: data.N8N_ONBOARDING_FLOW_DISABLED
-          value: "false"
-
-  - it: workflows-configmap should set N8N_ONBOARDING_FLOW_DISABLED to true when workflows.onboardingFlowDisabled is true
-    set:
-      workflows:
-        onboardingFlowDisabled: true
-    documentSelector:
-      path: metadata.name
-      value: n8n-workflows-configmap
-    asserts:
-      - equal:
-          path: data.N8N_ONBOARDING_FLOW_DISABLED
-          value: "true"
 
   - it: workflows-configmap should set N8N_WORKFLOW_ACTIVATION_BATCH_SIZE to 1 by default
     documentSelector:

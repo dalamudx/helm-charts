@@ -130,11 +130,11 @@ npmRegistry:
 
 # Configuration for binary data storage
 binaryData:
-  # Available modes of binary data storage. If not set, the default mode will be used. For more information, see https://docs.n8n.io/hosting/configuration/environment-variables/binary-data/
-  availableModes: []
-  # -- Binary data storage mode. Valid values: `default` (in-memory) \| `filesystem` \| `s3`.
-  mode: "default"
-  # Path for binary data storage in "filesystem" mode. If not set, the default path will be used. For more information, see https://docs.n8n.io/hosting/configuration/environment-variables/binary-data/
+  # -- Binary data storage mode. Valid values: `default` (in-memory, deprecated) | `filesystem` | `s3` | `database`.
+  # Leave empty to let n8n choose: `filesystem` in regular mode, `database` in queue mode.
+  mode: ""
+  # -- Base storage path for `filesystem` mode, also used for execution data stored on disk.
+  # Maps to N8N_STORAGE_PATH. Leave empty to use the default (`~/.n8n/storage`).
   localStoragePath: ""
   # S3-compatible external storage configurations. For more information, see https://docs.n8n.io/hosting/configuration/environment-variables/external-data-storage/
   s3:
@@ -150,8 +150,9 @@ binaryData:
     accessSecret: ""
     # -- Existing secret for S3 credentials (keys: `access-key-id`, `secret-access-key`).
     existingSecret: ""
-    # Optional force path style for external object storage such as minIO
-    # forcePathStyle: ""
+    # -- Use path-style addressing for S3 requests (needed for MinIO and most S3-compatible stores).
+    # Maps to N8N_EXTERNAL_STORAGE_S3_FORCE_PATH_STYLE. Default is true.
+    forcePathStyle: true
 
 # n8n database configurations
 db:
@@ -280,8 +281,6 @@ license:
   autoNenew:
     # Enables (true) or disables (false) autorenewal for licenses. If disabled, you need to manually renew the license every 10 days by navigating to Settings > Usage and plan, and pressing F5. Failure to renew the license will disable Enterprise features.
     enabled: true
-    # Time in hours before expiry a license should automatically renew.
-    offsetInHours: 72
   # Server URL to retrieve license.
   serverUrl: "https://license.n8n.io/v1"
   # Tenant ID associated with the license. Only set this variable if explicitly instructed by n8n.
@@ -768,7 +767,7 @@ taskRunners:
     pullPolicy: IfNotPresent
     # -- Image tag (defaults to chart appVersion).
     tag: ""
-  # Use `internal` to use internal task runner, or use `external` to have external sidecar task runner. For more information please follow the documentation: https://docs.n8n.io/hosting/configuration/task-runners/#task-runner-modes
+  # Use `internal` to run the task runner as a child process of n8n (deprecated by n8n, removed in v3), or `external` to run the sidecar task runner. For more information please follow the documentation: https://docs.n8n.io/hosting/configuration/task-runners/#task-runner-modes
   mode: internal
   # The timeout for the task in seconds
   taskTimeout: 60
@@ -780,8 +779,9 @@ taskRunners:
   maxPayload: "1073741824"
   # Block access to the runner's environment from within Python code tasks
   blockEnvAccess: true
-  # Allow prototype mutation in the Code node (JavaScript)
-  allowPrototypeMutation: false
+  # Disable all task runner security measures, for compatibility with modules that rely on insecure JS features. Discouraged for production use.
+  # Replaces the removed N8N_RUNNERS_ALLOW_PROTOTYPE_MUTATION flag. Maps to N8N_RUNNERS_INSECURE_MODE. Default is false.
+  insecureMode: false
 
   broker:
     address: "127.0.0.1"
@@ -808,8 +808,6 @@ taskRunners:
 
 # The workflow history configuration
 workflowHistory:
-  # Whether to save workflow history versions
-  enabled: true
   # Time (in hours) to keep workflow history versions for. To disable it, use -1 as a value
   pruneTime: 336
 
@@ -849,9 +847,6 @@ security:
 
 # Workflow-related configurations. For more information see: https://docs.n8n.io/hosting/configuration/environment-variables/workflows/
 workflows:
-  # -- Whether to disable the onboarding flow for new users.
-  # Maps to N8N_ONBOARDING_FLOW_DISABLED. Default is false.
-  onboardingFlowDisabled: false
   # -- Number of workflows to activate in one batch during startup.
   # Maps to N8N_WORKFLOW_ACTIVATION_BATCH_SIZE. Default is 1.
   activationBatchSize: 1

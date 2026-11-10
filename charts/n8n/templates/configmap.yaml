@@ -151,7 +151,6 @@ metadata:
   labels:
     {{- include "n8n.labels.standard" . | nindent 4 }}
 data:
-  N8N_WORKFLOW_HISTORY_ENABLED: {{ .Values.workflowHistory.enabled | quote }}
   N8N_WORKFLOW_HISTORY_PRUNE_TIME: {{ .Values.workflowHistory.pruneTime | quote }}
 ---
 apiVersion: v1
@@ -227,7 +226,6 @@ metadata:
     {{- include "n8n.labels.standard" . | nindent 4 }}
 data:
   N8N_LICENSE_AUTO_RENEW_ENABLED: {{ .Values.license.autoNenew.enabled | quote }}
-  N8N_LICENSE_AUTO_RENEW_OFFSET: {{ .Values.license.autoNenew.offsetInHours | mul 3600 | quote }}
   N8N_LICENSE_SERVER_URL: {{ .Values.license.serverUrl | quote }}
   {{- if ne (int .Values.license.tenantId) 1 }}
   N8N_LICENSE_TENANT_ID: {{ .Values.license.tenantId | quote }}
@@ -241,20 +239,17 @@ metadata:
   labels:
     {{- include "n8n.labels.standard" . | nindent 4 }}
 data:
+{{- if .Values.binaryData.mode }}
   N8N_DEFAULT_BINARY_DATA_MODE: {{ .Values.binaryData.mode | quote }}
-{{- if gt (len .Values.binaryData.availableModes) 0 }}
-  N8N_AVAILABLE_BINARY_DATA_MODES: {{ join "," .Values.binaryData.availableModes | quote }}
 {{- end }}
-{{- if and (has "filesystem" .Values.binaryData.availableModes) (ne .Values.binaryData.localStoragePath "") }}
-  N8N_BINARY_DATA_STORAGE_PATH: {{ .Values.binaryData.localStoragePath | quote }}
+{{- if and (eq .Values.binaryData.mode "filesystem") (ne .Values.binaryData.localStoragePath "") }}
+  N8N_STORAGE_PATH: {{ .Values.binaryData.localStoragePath | quote }}
 {{- end }}
-{{- if has "s3" .Values.binaryData.availableModes }}
+{{- if eq .Values.binaryData.mode "s3" }}
   N8N_EXTERNAL_STORAGE_S3_HOST: {{ .Values.binaryData.s3.host | quote }}
   N8N_EXTERNAL_STORAGE_S3_BUCKET_NAME: {{ .Values.binaryData.s3.bucketName | quote }}
   N8N_EXTERNAL_STORAGE_S3_BUCKET_REGION: {{ .Values.binaryData.s3.bucketRegion | quote }}
-  {{- if hasKey .Values.binaryData.s3 "forcePathStyle" }}
-  N8N_BINARY_DATA_S3_FORCE_PATH_STYLE: {{ .Values.binaryData.s3.forcePathStyle | quote }}
-  {{- end }}
+  N8N_EXTERNAL_STORAGE_S3_FORCE_PATH_STYLE: {{ .Values.binaryData.s3.forcePathStyle | quote }}
 {{- end }}
 ---
 apiVersion: v1
@@ -278,7 +273,6 @@ metadata:
   labels:
     {{- include "n8n.labels.standard" . | nindent 4 }}
 data:
-  N8N_ONBOARDING_FLOW_DISABLED: {{ .Values.workflows.onboardingFlowDisabled | quote }}
   N8N_WORKFLOW_ACTIVATION_BATCH_SIZE: {{ .Values.workflows.activationBatchSize | quote }}
   N8N_WORKFLOW_CALLER_POLICY_DEFAULT_OPTION: {{ .Values.workflows.callerPolicyDefaultOption | quote }}
   N8N_WORKFLOW_TAGS_DISABLED: {{ .Values.workflows.tagsDisabled | quote }}
